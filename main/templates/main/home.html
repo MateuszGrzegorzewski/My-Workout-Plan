@@ -1,0 +1,16 @@
+{% extends "main/base.html" %} {% block content %}
+
+<h1>Home Template</h1>
+<div>
+  
+  <div>
+    <p>Enter to your trainings</p>
+    <a href = "{% url 'training' %}">Trainings</a>
+  </div>
+  <div>
+    <p>Enter to your plan</p>
+    <a href = "{% url 'plan' %}">Plan</a>
+  </div>
+</div>
+
+{% endblock %}

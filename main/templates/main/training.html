@@ -1,0 +1,72 @@
+{% extends "main/base.html" %} {% block content %}
+
+<h1>List of trainings Template</h1>
+<form method="get" action="{% url 'training' %}">
+  <input type="text" placeholder="Search training..." name="q" />
+</form>
+
+<hr />
+
+<div>
+  <div>
+    <a href="{% url 'create-training' %}">Create of new training - NAME </a>
+  </div>
+  <div>
+    <a href="{% url 'create-exercise' %}">Create exercise to training </a>
+  </div>
+
+  <hr />
+
+  <div>
+    {% for tr_name in trainings_name %}
+    {% if request.user == tr_name.user %}
+    <div>
+      <hr />
+      <h3>{{tr_name.id}} -- {{tr_name.name}}</h3>
+
+      <div>
+        <div>
+          <a href="{% url 'update-training' tr_name.id %}"
+            >Edit name of training
+          </a>
+        </div>
+  
+        <div>
+          <a href="{% url 'delete-training' tr_name.id %}">Delete training </a>
+        </div>
+      </div>
+      
+      <div>
+        <hr />
+        <a href="{% url 'training' tr_name.id %}"
+          >Here you can go to the training values page
+        </a>
+      </div>
+
+      {% for tr_main in trainings_main %} {% if tr_main.name.id == tr_name.id %}
+      <div>
+        <hr />
+        <h5>Exercise -- {{tr_main.exercise}}</h5>
+        <div>
+          <a href="{% url 'update-exercise' tr_main.id %}">Edit exercise </a>
+        </div>
+
+        <div>
+          <a href="{% url 'delete-exercise' tr_main.id %}">Delete exercise </a>
+        </div>
+        <div>
+          <p>Series -- {{tr_main.series}}</p>
+          <p>Reps -- {{tr_main.reps}}</p>
+          <p>Tempo -- {{tr_main.tempo}}</p>
+          <p>RIR -- {{tr_main.rir}}</p>
+          <p>Rest -- {{tr_main.rest}}</p>
+        </div>
+        <div></div>
+      </div>
+      {% endif %} {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
