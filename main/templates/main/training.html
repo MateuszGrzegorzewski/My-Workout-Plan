@@ -19,7 +19,6 @@
 
   <div>
     {% for tr_name in trainings_name %}
-    {% if request.user == tr_name.user %}
     <div>
       <hr />
       <h3>{{tr_name.id}} -- {{tr_name.name}}</h3>
@@ -30,12 +29,12 @@
             >Edit name of training
           </a>
         </div>
-  
+
         <div>
           <a href="{% url 'delete-training' tr_name.id %}">Delete training </a>
         </div>
       </div>
-      
+
       <div>
         <hr />
         <a href="{% url 'training' tr_name.id %}"
@@ -43,7 +42,8 @@
         </a>
       </div>
 
-      {% for tr_main in trainings_main %} {% if tr_main.name.id == tr_name.id %}
+      {% for tr_main in trainings_main %}
+      {% if tr_main.name.id == tr_name.id %}
       <div>
         <hr />
         <h5>Exercise -- {{tr_main.exercise}}</h5>
@@ -63,9 +63,9 @@
         </div>
         <div></div>
       </div>
-      {% endif %} {% endfor %}
+      {% endif %}
+      {% endfor %}
     </div>
-    {% endif %}
     {% endfor %}
   </div>
 </div>

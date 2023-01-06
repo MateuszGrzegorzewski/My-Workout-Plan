@@ -18,16 +18,26 @@ urlpatterns = [
          name="update-training"),
     path("delete-training/<str:pk>/", views.deleteTraining,
          name="delete-training"),
-     path("create-exercise/", views.createExercise,
+
+    path("create-exercise/", views.createExercise,
          name="create-exercise"),
-     path("update-exercise/<str:pk>/", views.updateExercise,
+    path("update-exercise/<str:pk>/", views.updateExercise,
          name="update-exercise"),
     path("delete-exercise/<str:pk>/", views.deleteExercise,
          name="delete-exercise"),
-     path("create-exercise-scores/", views.createExerciseScores,
+    path("create-exercise-scores/", views.createExerciseScores,
+
          name="create-exercise-score"),
-     path("update-exercise-scores/<str:pk>/", views.updateExerciseScores,
+    path("update-exercise-scores/<str:pk>/", views.updateExerciseScores,
          name="update-exercise-score"),
     path("delete-exercise-scores/<str:pk>/", views.deleteExerciseScores,
          name="delete-exercise-score"),
+
+    path("create-plan/", views.createPlan, name="create-plan"),
+    path("update-plan/<str:pk>/", views.updatePlan, name="update-plan"),
+    path("delete-plan/<str:pk>/", views.deletePlan, name="delete-plan"),
+
+    path("add-training-to-plan/", views.addTrainingToPlan, name="add-training-to-plan"),
+    path("delete-training-from-plan/<str:pk>/",
+         views.deleteTrainingFromPlan, name="delete-training-from-plan"),
 ]

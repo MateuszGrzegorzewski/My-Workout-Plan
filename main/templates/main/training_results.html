@@ -3,7 +3,7 @@
 <h2>{{trainings_name.name}}</h2>
 <div>
   {% for tr_main in trainings_main %} 
-  {% if tr_main.name.id == trainings_name.id and tr_main.name.id == request.user %}
+  {% if tr_main.name.id == trainings_name.id %}
   <div>
     <h5>Exercise -- {{tr_main.exercise}}</h5>
     <div>
@@ -20,14 +20,11 @@
 
 <div>
   <div>
-    <hr>
-    <a href="{% url 'create-exercise-score' %}"
-        >Create score of exercise
-    </a>
-    <hr>
+    <hr />
+    <a href="{% url 'create-exercise-score' %}">Create score of exercise </a>
+    <hr />
   </div>
-  {% for tr in training %}
-  {% if tr.name.id == trainings_name.id %}
+  {% for tr in training %} {% if tr.name.id == trainings_name.id %}
   <div>
     <h5>Exercise --> {{tr.exercise}}</h5>
     <div>
@@ -43,14 +40,13 @@
     </div>
     <div>
       <p>Serie --> {{tr.series}}</p>
-      <p>Weight --> {{tr.weight}} </p>
+      <p>Weight --> {{tr.weight}}</p>
       <p>Reps --> {{tr.reps}}</p>
       <p>Rir --> {{tr.rir}}</p>
     </div>
-    <hr>
+    <hr />
   </div>
-  {% endif %}
-  {% endfor %}
+  {% endif %} {% endfor %}
 </div>
 
 {% endblock %}

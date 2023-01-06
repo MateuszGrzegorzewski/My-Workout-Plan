@@ -37,10 +37,16 @@ class Training(models.Model):
     def __str__(self):
         return self.series
 
-class Plan(models.Model):
+class PlanName(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
-    training = models.ForeignKey(TrainingName, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
+
+class Plan(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.ForeignKey(PlanName, on_delete=models.CASCADE)
+    training = models.ForeignKey(TrainingName, on_delete=models.CASCADE)
+    
+
