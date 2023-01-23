@@ -1,0 +1,82 @@
+{% extends "main/base.html" %} {% block content %} {% if page == 'create' %}
+<div>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <h3>Create Training</h3>
+    <div>
+      <label>Enter a name of training</label>
+      <input
+        required
+        type="text"
+        value="{{training_name}}"
+        name="name"
+        list="training-list"
+      />
+      <datalist id="training-list">
+        {% for training in trainings %}
+        <option value="{{training.name}}">{{training.name}}</option>
+        {% endfor %}
+      </datalist>
+    </div>
+    <div>
+      <label>Enter excercise</label>
+      {{form.exercise}}
+    </div>
+    <div>
+      <label>Enter series</label>
+      {{form.series}}
+    </div>
+    <div>
+      <label>Enter reps</label>
+      {{form.reps}}
+    </div>
+    <div>
+      <label>Enter tempo</label>
+      {{form.tempo}}
+    </div>
+    <div>
+      <label>Enter RIR (Reps In Reserve)</label>
+      {{form.rir}}
+    </div>
+    <div>
+      <label>Enter rest</label>
+      {{form.rest}}
+    </div>
+
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+{% else %}
+<div>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <h3>Update Training</h3>
+    <div>
+      <label>Enter excercise</label>
+      {{form.exercise}}
+    </div>
+    <div>
+      <label>Enter series</label>
+      {{form.series}}
+    </div>
+    <div>
+      <label>Enter reps</label>
+      {{form.reps}}
+    </div>
+    <div>
+      <label>Enter tempo</label>
+      {{form.tempo}}
+    </div>
+    <div>
+      <label>Enter RIR (Reps In Reserve)</label>
+      {{form.rir}}
+    </div>
+    <div>
+      <label>Enter rest</label>
+      {{form.rest}}
+    </div>
+
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+{% endif %} {% endblock %}

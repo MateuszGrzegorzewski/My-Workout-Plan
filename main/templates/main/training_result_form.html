@@ -1,0 +1,61 @@
+{% extends "main/base.html" %} {% block content %} {% if page == 'create' %}
+<div>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <h3>Create result from training</h3>
+    <h5>Training: {{training}}</h5>
+    <div>
+      <label>Enter exercise</label>
+      <input required name="exercise" list="exercise-list" />
+      <datalist id="exercise-list">
+        {% for exercise in exercises %}
+        <option>{{exercise.exercise}}</option>
+        {% endfor %}
+      </datalist>
+    </div>
+    <div>
+      <label>Enter serie</label>
+      {{form.series}}
+    </div>
+    <div>
+      <label>Enter weight</label>
+      {{form.weight}}
+    </div>
+    <div>
+      <label>Enter amount of reps</label>
+      {{form.reps}}
+    </div>
+    <div>
+      <label>Enter RIR (Reps In Reserve)</label>
+      {{form.rir}}
+    </div>
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+{% else %}
+<div>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <h3>Update result from training</h3>
+    <h5>Training: {{training_result.name}}</h5>
+    <h5>Excercise: {{training_result.exercise}}</h5>
+    <div>
+      <label>Enter serie</label>
+      {{form.series}}
+    </div>
+    <div>
+      <label>Enter weight</label>
+      {{form.weight}}
+    </div>
+    <div>
+      <label>Enter amount of reps</label>
+      {{form.reps}}
+    </div>
+    <div>
+      <label>Enter RIR (Reps In Reserve)</label>
+      {{form.rir}}
+    </div>
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+{% endif %} {% endblock %}

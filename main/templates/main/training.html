@@ -1,6 +1,5 @@
 {% extends "main/base.html" %} {% block content %}
 
-<h1>List of trainings Template</h1>
 <form method="get" action="{% url 'training' %}">
   <input type="text" placeholder="Search training..." name="q" />
 </form>
@@ -9,19 +8,14 @@
 
 <div>
   <div>
-    <a href="{% url 'create-training' %}">Create of new training - NAME </a>
+    <a href="{% url 'create-training' %}">Create training / add exercise</a>
   </div>
-  <div>
-    <a href="{% url 'create-exercise' %}">Create exercise to training </a>
-  </div>
-
-  <hr />
 
   <div>
     {% for tr_name in trainings_name %}
     <div>
       <hr />
-      <h3>{{tr_name.id}} -- {{tr_name.name}}</h3>
+      <h3>{{tr_name.name}}</h3>
 
       <div>
         <div>
@@ -42,8 +36,7 @@
         </a>
       </div>
 
-      {% for tr_main in trainings_main %}
-      {% if tr_main.name.id == tr_name.id %}
+      {% for tr_main in trainings_main %} {% if tr_main.name.id == tr_name.id %}
       <div>
         <hr />
         <h5>Exercise -- {{tr_main.exercise}}</h5>
@@ -55,7 +48,10 @@
           <a href="{% url 'delete-exercise' tr_main.id %}">Delete exercise </a>
         </div>
         <div>
-          <p>Series -- {{tr_main.series}}</p>
+          <p>
+            Series -- {% if tr_main.series == None %} {% else %}
+            {{tr_main.series}} {% endif %}
+          </p>
           <p>Reps -- {{tr_main.reps}}</p>
           <p>Tempo -- {{tr_main.tempo}}</p>
           <p>RIR -- {{tr_main.rir}}</p>
@@ -63,8 +59,7 @@
         </div>
         <div></div>
       </div>
-      {% endif %}
-      {% endfor %}
+      {% endif %} {% endfor %}
     </div>
     {% endfor %}
   </div>

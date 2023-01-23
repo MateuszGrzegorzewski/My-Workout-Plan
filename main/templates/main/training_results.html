@@ -1,5 +1,4 @@
 {% extends "main/base.html" %} {% block content %}
-<h1>Training Template</h1>
 <h2>{{trainings_name.name}}</h2>
 <div>
   {% for tr_main in trainings_main %} 
@@ -21,7 +20,7 @@
 <div>
   <div>
     <hr />
-    <a href="{% url 'create-exercise-score' %}">Create score of exercise </a>
+    <a href="{% url 'create-exercise-score' trainings_name.id %}">Create score of exercise </a>
     <hr />
   </div>
   {% for tr in training %} {% if tr.name.id == trainings_name.id %}
