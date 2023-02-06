@@ -8,6 +8,7 @@ from django.http import HttpResponse
 
 from .models import Training, TrainingMain, TrainingName, Plan, PlanName
 from .forms import TrainingForm, TrainingMainForm, TrainingNameForm, PlanNameForm, PlanForm
+from .serializers import TrainingMainSerializer, TrainingNameSerializer, TrainingSerializer, PlanNameSerializer, PlanSerializer
 
 
 def loginPage(request):
