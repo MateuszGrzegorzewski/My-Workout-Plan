@@ -16,8 +16,7 @@ class Muscle(models.Model):
 class Exercise(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    muscle = models.ForeignKey(
-        Muscle, on_delete=models.CASCADE)
+    muscle = models.ManyToManyField(Muscle)
     technique = models.TextField(null=True, blank=True)
 
     class Meta:

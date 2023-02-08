@@ -1,9 +1,9 @@
 from rest_framework import viewsets, generics
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, AuthorOrReadOnly
 from .serializer import MuscleSerializer, ExerciseSerializer
 from .models import Exercise, Muscle
 
@@ -16,7 +16,14 @@ class MuscleViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         queryset = Muscle.objects.all()
         muscle = get_object_or_404(queryset, pk=pk)
-        exercises = Exercise.objects.filter(muscle__pk=pk)
+
+        if request.user.is_authenticated:
+            exercises = Exercise.objects.filter(muscle__pk=pk).filter(
+                user__is_staff=True) | Exercise.objects.filter(muscle__pk=pk).filter(user=request.user)
+        else:
+            exercises = Exercise.objects.filter(
+                muscle__pk=pk).filter(user__is_staff=True)
+
         serializer = MuscleSerializer(muscle)
         serializer_exercise = ExerciseSerializer(exercises, many=True)
         return Response({"muscle": serializer.data,
@@ -26,13 +33,13 @@ class MuscleViewSet(viewsets.ModelViewSet):
 class ExerciseDetailUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Exercise.objects.all()
     serializer_class = ExerciseSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, AuthorOrReadOnly]
 
 
 class ExerciseCreateView(generics.CreateAPIView):
     queryset = Exercise.objects.all()
     serializer_class = ExerciseSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
 
 # from rest_framework.decorators import api_view
