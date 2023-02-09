@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import TrainingMain, Training, TrainingName, PlanName, Plan
+from .models import TrainingMain, TrainingResult, TrainingName, PlanName, Plan
 
 
 class TrainingMainForm(ModelForm):
@@ -16,9 +16,9 @@ class TrainingNameForm(ModelForm):
         exclude = ["user"]
 
 
-class TrainingForm(ModelForm):
+class TrainingResultForm(ModelForm):
     class Meta:
-        model = Training
+        model = TrainingResult
         fields = "__all__"
         exclude = ["user", "name"]
 

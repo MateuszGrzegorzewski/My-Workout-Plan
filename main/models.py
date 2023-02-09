@@ -36,7 +36,7 @@ class TrainingMain(models.Model):
         return self.exercise
 
 
-class Training(models.Model):
+class TrainingResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.ForeignKey(TrainingName, on_delete=models.CASCADE)
     exercise = models.ForeignKey(TrainingMain, on_delete=models.CASCADE)

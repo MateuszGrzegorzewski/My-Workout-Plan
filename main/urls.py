@@ -9,8 +9,8 @@ urlpatterns = [
 
     path("", views.home, name='home'),
     path("plan/", views.plan, name='plan'),
-    path("training/", views.training, name='training'),
-    path("training/<str:pk>/", views.training_pk, name='training'),
+    path("training/", views.trainings, name='training'),
+    path("training/<str:pk>/", views.training, name='training'),
 
     path("create-training/", views.createTraining,
          name="create-training"),

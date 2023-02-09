@@ -6,9 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
-from .models import Training, TrainingMain, TrainingName, Plan, PlanName
-from .forms import TrainingForm, TrainingMainForm, TrainingNameForm, PlanNameForm, PlanForm
-from .serializers import TrainingMainSerializer, TrainingNameSerializer, TrainingSerializer, PlanNameSerializer, PlanSerializer
+from .models import TrainingResult, TrainingMain, TrainingName, Plan, PlanName
+from .forms import TrainingResultForm, TrainingMainForm, TrainingNameForm, PlanNameForm, PlanForm
 
 
 def loginPage(request):
@@ -76,7 +75,7 @@ def plan(request):
 
 
 @login_required(login_url="login")
-def training(request):
+def trainings(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ""
 
     trainings_name = TrainingName.objects.filter(
@@ -91,10 +90,10 @@ def training(request):
 
 
 @login_required(login_url="login")
-def training_pk(request, pk):
+def training(request, pk):
     trainings_name = TrainingName.objects.get(id=pk)
     trainings_main = trainings_name.trainingmain_set.all()
-    training = trainings_name.training_set.all()
+    training = trainings_name.trainingresult_set.all()
 
     if request.user != trainings_name.user:
         return HttpResponse("You have not permissions.")
@@ -136,14 +135,11 @@ def createTraining(request):
     context = {'form': form, "trainings": trainings, 'page': page}
     return render(request, 'main/training_form.html', context)
 
-    # Poszukać jak rozwiązać problem integerfielda
-
 
 @login_required(login_url="login")
 def updateTraining(request, pk):
     training_name = TrainingName.objects.get(id=pk)
     form = TrainingNameForm(instance=training_name)
-    # I change this for create bbecause i do not know to redirect to another site
     if request.user != training_name.user:
         return HttpResponse("You have not permissions.")
 
@@ -215,7 +211,7 @@ def deleteExercise(request, pk):
 def createExerciseScores(request, pk_training):
     page = 'create'
     training = TrainingName.objects.get(id=pk_training)
-    form = TrainingForm()
+    form = TrainingResultForm()
     exercises = training.trainingmain_set.all()
 
     if request.method == 'POST':
@@ -227,7 +223,7 @@ def createExerciseScores(request, pk_training):
         values = [None if request.POST.get(i) == ""
                   else request.POST.get(i) for i in integers]
 
-        Training.objects.create(
+        TrainingResult.objects.create(
             user=request.user,
             name=training,
             exercise=exercise,
@@ -247,8 +243,8 @@ def createExerciseScores(request, pk_training):
 
 @login_required(login_url="login")
 def updateExerciseScores(request, pk):
-    training_result = Training.objects.get(id=pk)
-    form = TrainingForm(instance=training_result)
+    training_result = TrainingResult.objects.get(id=pk)
+    form = TrainingResultForm(instance=training_result)
 
     if request.user != training_result.user:
         return HttpResponse("You have not permissions.")
@@ -273,7 +269,7 @@ def updateExerciseScores(request, pk):
 
 @login_required(login_url="login")
 def deleteExerciseScores(request, pk):
-    training_result = Training.objects.get(id=pk)
+    training_result = TrainingResult.objects.get(id=pk)
 
     if request.user != training_result.user:
         return HttpResponse("You have not permissions.")
@@ -287,13 +283,6 @@ def deleteExerciseScores(request, pk):
     }
 
     return render(request, 'main/delete.html', context)
-
-
-#  !!!
-
-# NOW THIS TO IMPORVE
-
-#  !!!
 
 
 @login_required(login_url="login")

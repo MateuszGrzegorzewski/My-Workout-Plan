@@ -11,16 +11,30 @@ The project will be have some functionalities:
 - Creating, editing, deleting trainins,
 - Creating, editing, deleting plans,
 - Adding training results to monitor progress,
-- Possibility to search for exercises for specific muscle parts. Here will be insprition of site: https://musclewiki.com/.
+- Possibility to search for exercises for specific muscle parts.
 
 The application will be used:
 
 - Django,
 - Django RESTFramework,
-- HTML,CSS
-- Others
+- HTML,CSS,
+- pytest,
+- Docker.
 
 ## What is to do
+
+Actual plans:
+
+- changins names of variables classes and files in main folder
+- Improvments of html files
+- tests !!!!
+
+- changing sqlite on postgresql
+- adding docker
+- adding requirements
+- adding .env and .env-example
+
+Others:
 
 - changing API - using Django REST Framework (include checking JSON web tokens and similar things to authentication)
 - admin panel
@@ -28,33 +42,3 @@ The application will be used:
 - login with using email
 - adding avatars to users
 - password reset
-
-- connecting with a postgres database
-- tests of application
-
-- muscle wiki:
-  -- CRUD with difference between admin and user
-  Important: It is necessary to use django rest framework
-  It will be two tables one w partial of muscle
-  Second with exercises to this partial of muscle
-
-Muscle:
-
-- forearms,
-- biceps,
-- triceps,
-- shoulders,
-- chest,
-- ABS,
-- Back,
-- glutes,
-- quads,
-- hamstrings,
-- adductors, (przywodziciele)
-- calves.
-
-Exercise:
-
-- name,
-- muscle (possibility to add few),
-- technique
