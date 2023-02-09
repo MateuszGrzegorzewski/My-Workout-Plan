@@ -8,12 +8,11 @@ router = routers.DefaultRouter()
 router.register(r'', MuscleViewSet, basename='muscles')
 
 urlpatterns = [
+    path("", include((router.urls, 'musclewiki'))),
     path('exercise/<int:pk>/', ExerciseDetailUpdateDeleteAPIView.as_view(),
          name='exercise-detail-update-delete'),
-    path('exercise/', ExerciseCreateView.as_view(), name='exercise-create'),
+    path('exercise/create/', ExerciseCreateView.as_view(), name='exercise-create'),
 ]
-
-urlpatterns += router.urls
 
 
 # from . import views
@@ -29,5 +28,3 @@ urlpatterns += router.urls
 #     path('<int:pk>', views.getExercises),
 
 # ]
-
-# NEXT URLS for views which I create

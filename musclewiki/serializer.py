@@ -1,16 +1,29 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 from .models import Exercise, Muscle
 
 
 class MuscleSerializer(serializers.ModelSerializer):
+    muscle_with_exercises_url = serializers.SerializerMethodField(
+        read_only=True)
+
     class Meta:
         model = Muscle
         fields = '__all__'
 
+    def get_muscle_with_exercises_url(self, obj):
+        request = self.context.get('request')
+
+        if request is None:
+            return None
+        return reverse("musclewiki:muscles-detail", kwargs={"pk": obj.pk}, request=request)
+
 
 class ExerciseSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    url = serializers.HyperlinkedIdentityField(
+        view_name='exercise-detail-update-delete')
 
     class Meta:
         model = Exercise

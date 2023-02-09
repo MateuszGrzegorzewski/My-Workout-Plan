@@ -1,3 +1,4 @@
+from django.http import Http404
 from rest_framework import viewsets, generics
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -15,7 +16,10 @@ class MuscleViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         queryset = Muscle.objects.all()
-        muscle = get_object_or_404(queryset, pk=pk)
+        try:
+            muscle = get_object_or_404(queryset, pk=pk)
+        except ValueError:
+            raise Http404
 
         if request.user.is_authenticated:
             exercises = Exercise.objects.filter(muscle__pk=pk).filter(
@@ -25,8 +29,10 @@ class MuscleViewSet(viewsets.ModelViewSet):
                 muscle__pk=pk).filter(user__is_staff=True)
 
         serializer = MuscleSerializer(muscle)
-        serializer_exercise = ExerciseSerializer(exercises, many=True)
+        serializer_exercise = ExerciseSerializer(
+            exercises, many=True, context={'request': request})
         return Response({"muscle": serializer.data,
+                         "exercise-create-route": "/musclewiki/exercise/create/",
                         "exercises": serializer_exercise.data})
 
 
@@ -42,6 +48,9 @@ class ExerciseCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
 
+# from django.shortcuts import render
+# from rest_framework import status
+# from rest_framework.settings import api_settings
 # from rest_framework.decorators import api_view
 # from rest_framework import status
 # from rest_framework import mixins
@@ -105,9 +114,3 @@ class ExerciseCreateView(generics.CreateAPIView):
 #     serializer = ExerciseSerializer(
 #         exercise, many=True, context={'request': request})
 #     return Response(serializer.data)
-
-# Next: POST PUT DELETE muscles - only admin
-# POST PUT DELETE exercise
-# Everyone see  (GET) only muscles and exercises which admin added
-
-#  CREATE html file and display it on this file and others things
