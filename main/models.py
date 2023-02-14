@@ -21,10 +21,10 @@ class TrainingMain(models.Model):
     name = models.ForeignKey(TrainingName, on_delete=models.CASCADE)
     exercise = models.CharField(max_length=100)
     series = models.IntegerField(null=True, blank=True)
-    reps = models.CharField(max_length=10, blank=True)
-    tempo = models.CharField(max_length=10, blank=True)
-    rir = models.CharField(max_length=10, blank=True)
-    rest = models.CharField(max_length=10, blank=True)
+    reps = models.CharField(max_length=10, null=True, blank=True)
+    tempo = models.CharField(max_length=10, null=True, blank=True)
+    rir = models.CharField(max_length=10, null=True, blank=True)
+    rest = models.CharField(max_length=10, null=True, blank=True)
 
     class Meta:
         constraints = [

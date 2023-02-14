@@ -14,7 +14,7 @@
     <a href="{% url 'delete-plan' plan_name.id %}">Delete your plan</a>
 
     <div>
-      {% for plan in plans %}
+      {% for plan in plans %} {% if plan.name.id == plan_name.id %}
       <div>training -- {{ plan.training }}</div>
       <a href="{% url 'delete-training-from-plan' plan.id %}"
         >Delete training from plan</a
@@ -39,7 +39,7 @@
         </div>
         {% endfor %}
       </div>
-      {% endfor %}
+      {% endif %} {% endfor %}
     </div>
   </div>
 

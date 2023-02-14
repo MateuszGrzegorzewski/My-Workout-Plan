@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 from .models import TrainingResult, TrainingMain, TrainingName, Plan, PlanName
 from .forms import TrainingResultForm, TrainingMainForm, TrainingNameForm, PlanNameForm, PlanForm
@@ -67,7 +67,7 @@ def plan(request):
     trainings = TrainingMain.objects.filter(user=request.user)
 
     context = {"plan_names": plan_names,
-               'plans': plans,
+               "plans": plans,
                "trainings": trainings
                }
 
@@ -96,7 +96,7 @@ def training(request, pk):
     training = trainings_name.trainingresult_set.all()
 
     if request.user != trainings_name.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     context = {'trainings_name': trainings_name,
                "trainings_main": trainings_main,
@@ -111,6 +111,7 @@ def createTraining(request):
     page = 'create'
     form = TrainingMainForm()
     trainings = TrainingName.objects.filter(user=request.user)
+
     if request.method == 'POST':
         training_name = request.POST.get('name')
         training, created = TrainingName.objects.filter(user=request.user).get_or_create(
@@ -120,17 +121,21 @@ def createTraining(request):
         if series == "":
             series = None
 
-        TrainingMain.objects.create(
-            user=request.user,
-            name=training,
-            exercise=request.POST.get('exercise'),
-            series=series,
-            reps=request.POST.get('reps'),
-            tempo=request.POST.get('tempo'),
-            rir=request.POST.get('rir'),
-            rest=request.POST.get('rest'),
-        )
-        return redirect('training')
+        try:
+            TrainingMain.objects.create(
+                user=request.user,
+                name=training,
+                exercise=request.POST.get('exercise'),
+                series=series,
+                reps=request.POST.get('reps'),
+                tempo=request.POST.get('tempo'),
+                rir=request.POST.get('rir'),
+                rest=request.POST.get('rest'),
+            )
+            return redirect('training')
+        except:
+            messages.error(request, """Error occured during create Training. 
+                    The likely cause is an attempt to create the same exercise.""")
 
     context = {'form': form, "trainings": trainings, 'page': page}
     return render(request, 'main/training_form.html', context)
@@ -140,14 +145,19 @@ def createTraining(request):
 def updateTraining(request, pk):
     training_name = TrainingName.objects.get(id=pk)
     form = TrainingNameForm(instance=training_name)
+
     if request.user != training_name.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
-        form = TrainingNameForm(request.POST, instance=training_name)
-        if form.is_valid():
-            form.save()
-            return redirect('training')
+        try:
+            form = TrainingNameForm(request.POST, instance=training_name)
+            if form.is_valid():
+                form.save()
+                return redirect('training')
+        except:
+            messages.error(request, """Error occured during create Training. 
+                    The likely cause is an attempt to create the same training.""")
 
     context = {'form': form}
     return render(request, 'main/create_form.html', context)
@@ -158,7 +168,7 @@ def deleteTraining(request, pk):
     training_name = TrainingName.objects.get(id=pk)
 
     if request.user != training_name.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
         training_name.delete()
@@ -173,21 +183,25 @@ def updateExercise(request, pk):
     form = TrainingMainForm(instance=training)
 
     if request.user != training.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
-        series = request.POST.get('series')
-        if series == "":
-            series = None
+        try:
+            series = request.POST.get('series')
+            if series == "":
+                series = None
 
-        training.series = series
-        training.reps = request.POST.get('reps')
-        training.tempo = request.POST.get('tempo')
-        training.rir = request.POST.get('rir')
-        training.rest = request.POST.get('rest')
-        training.save()
-
-        return redirect('training')
+            training.exercise = request.POST.get('exercise')
+            training.series = series
+            training.reps = request.POST.get('reps')
+            training.tempo = request.POST.get('tempo')
+            training.rir = request.POST.get('rir')
+            training.rest = request.POST.get('rest')
+            training.save()
+            return redirect('training')
+        except:
+            messages.error(request, """Error occured during updating Training. 
+                    The likely cause is an attempt to create the same exercise.""")
 
     context = {'form': form, "training": training}
     return render(request, 'main/training_form.html', context)
@@ -198,7 +212,7 @@ def deleteExercise(request, pk):
     training = TrainingMain.objects.get(id=pk)
 
     if request.user != training.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
         training.delete()
@@ -216,24 +230,29 @@ def createExerciseScores(request, pk_training):
 
     if request.method == 'POST':
         exercise_req = request.POST.get('exercise')
-        exercise = TrainingMain.objects.filter(
-            user=request.user).filter(name=training).get(exercise=exercise_req)
+        try:
+            exercise = TrainingMain.objects.filter(
+                user=request.user).filter(name=training).get(exercise=exercise_req)
+        except ObjectDoesNotExist:
+            pass
 
         integers = ["weight", "reps", "rir"]
         values = [None if request.POST.get(i) == ""
                   else request.POST.get(i) for i in integers]
-
-        TrainingResult.objects.create(
-            user=request.user,
-            name=training,
-            exercise=exercise,
-            series=request.POST.get('series'),
-            weight=values[0],
-            reps=values[1],
-            rir=values[2],
-        )
-
-        return redirect('training', pk=training.id)
+        try:
+            TrainingResult.objects.create(
+                user=request.user,
+                name=training,
+                exercise=exercise,
+                series=request.POST.get('series'),
+                weight=values[0],
+                reps=values[1],
+                rir=values[2],
+            )
+            return redirect('training', pk=training.id)
+        except:
+            messages.error(request, """Error occured during create score of training. 
+                                    The likely cause is an attempt to add exercise or training which does not exist.""")
 
     context = {'page': page, 'form': form,
                "training": training, "exercises": exercises}
@@ -247,7 +266,7 @@ def updateExerciseScores(request, pk):
     form = TrainingResultForm(instance=training_result)
 
     if request.user != training_result.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
 
@@ -272,7 +291,7 @@ def deleteExerciseScores(request, pk):
     training_result = TrainingResult.objects.get(id=pk)
 
     if request.user != training_result.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
         training_result.delete()
@@ -289,13 +308,17 @@ def deleteExerciseScores(request, pk):
 def createPlan(request):
     form = PlanNameForm()
 
-    if request.method == 'POST':
-        PlanName.objects.create(
-            user=request.user,
-            name=request.POST.get('name')
-        )
-
-        return redirect('plan')
+    try:
+        if request.method == 'POST':
+            PlanName.objects.create(
+                user=request.user,
+                name=request.POST.get('name')
+            )
+            return redirect('plan')
+    except:
+        messages.error(
+            request, """Error occured during create plan. 
+                    The likely cause is an attempt to make the same name for the plan.""")
 
     context = {'form': form}
     return render(request, 'main/plan_main_form.html', context)
@@ -307,13 +330,18 @@ def updatePlan(request, pk):
     form = PlanNameForm(instance=plan)
 
     if request.user != plan.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
-    if request.method == 'POST':
-        form = PlanNameForm(request.POST, instance=plan)
-        if form.is_valid():
-            form.save()
-            return redirect('plan')
+    try:
+        if request.method == 'POST':
+            form = PlanNameForm(request.POST, instance=plan)
+            if form.is_valid():
+                form.save()
+                return redirect('plan')
+    except:
+        messages.error(
+            request, """Error occured during create plan. 
+                    The likely cause is an attempt to make the same name for the plan.""")
 
     context = {'form': form}
     return render(request, 'main/create_form.html', context)
@@ -324,7 +352,7 @@ def deletePlan(request, pk):
     plan = PlanName.objects.get(id=pk)
 
     if request.user != plan.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
         plan.delete()
@@ -341,18 +369,28 @@ def addTrainingToPlan(request):
 
     if request.method == 'POST':
         name = request.POST.get('name')
-        name_plan = PlanName.objects.filter(user=request.user).get(name=name)
-
         training = request.POST.get('training')
-        training_name = TrainingName.objects.filter(
-            user=request.user).get(name=training)
 
-        Plan.objects.create(
-            user=request.user,
-            name=name_plan,
-            training=training_name
-        )
-        return redirect('plan')
+        try:
+            name_plan = PlanName.objects.filter(
+                user=request.user).get(name=name)
+            training_name = TrainingName.objects.filter(
+                user=request.user).get(name=training)
+        except ObjectDoesNotExist:
+            pass
+
+        try:
+            Plan.objects.create(
+                user=request.user,
+                name=name_plan,
+                training=training_name
+            )
+            return redirect('plan')
+        except:
+            messages.error(
+                request, """Error occured during adding training to plan. Possible caues: 
+                        1. Plan or training does not exist  
+                        2. Attempting to add the same training to the plan is impossible""")
 
     context = {'form': form, "plans": plans, "trainings": trainings}
     return render(request, 'main/plan_form.html', context)
@@ -363,13 +401,10 @@ def deleteTrainingFromPlan(request, pk):
     plan = Plan.objects.get(id=pk)
 
     if request.user != plan.user:
-        return HttpResponse("You have not permissions.")
+        raise PermissionDenied
 
     if request.method == 'POST':
         plan.delete()
         return redirect('plan')
 
     return render(request, 'main/delete.html', {"obj": plan.training.name})
-
-
-#  sprawdzić get_or_error albo coś do tych wszystkich errorów
