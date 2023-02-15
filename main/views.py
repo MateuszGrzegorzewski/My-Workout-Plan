@@ -1,13 +1,14 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.shortcuts import redirect, render
 
-from .models import TrainingResult, TrainingMain, TrainingName, Plan, PlanName
-from .forms import TrainingResultForm, TrainingMainForm, TrainingNameForm, PlanNameForm, PlanForm
+from .forms import (PlanForm, PlanNameForm, TrainingMainForm, TrainingNameForm,
+                    TrainingResultForm)
+from .models import Plan, PlanName, TrainingMain, TrainingName, TrainingResult
 
 
 def loginPage(request):

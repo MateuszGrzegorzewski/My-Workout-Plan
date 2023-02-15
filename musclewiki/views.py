@@ -1,12 +1,13 @@
 from django.http import Http404
-from rest_framework import viewsets, generics
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework import generics, viewsets
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from .permissions import IsOwnerOrReadOnly, AuthorOrReadOnly
-from .serializer import MuscleSerializer, ExerciseSerializer
 from .models import Exercise, Muscle
+from .permissions import AuthorOrReadOnly, IsOwnerOrReadOnly
+from .serializer import ExerciseSerializer, MuscleSerializer
 
 
 class MuscleViewSet(viewsets.ModelViewSet):
@@ -15,9 +16,8 @@ class MuscleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly]
 
     def retrieve(self, request, pk=None):
-        queryset = Muscle.objects.all()
         try:
-            muscle = get_object_or_404(queryset, pk=pk)
+            muscle = Muscle.objects.get(pk=pk)
         except ValueError:
             raise Http404
 
@@ -32,8 +32,8 @@ class MuscleViewSet(viewsets.ModelViewSet):
         serializer_exercise = ExerciseSerializer(
             exercises, many=True, context={'request': request})
         return Response({"muscle": serializer.data,
-                         "exercise-create-route": "/musclewiki/exercise/create/",
-                        "exercises": serializer_exercise.data})
+                        "exercise-create-route": "/musclewiki/exercise/create/",
+                         "exercises": serializer_exercise.data})
 
 
 class ExerciseDetailUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -47,6 +47,7 @@ class ExerciseCreateView(generics.CreateAPIView):
     serializer_class = ExerciseSerializer
     permission_classes = [IsAuthenticated]
 
+# sprawdzić integrity error dla różnych przypadków, pewnie będzie trzeba dodać validation
 
 # from django.shortcuts import render
 # from rest_framework import status
