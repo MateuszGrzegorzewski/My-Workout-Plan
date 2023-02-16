@@ -25,9 +25,8 @@ The application will be used:
 
 Actual plans:
 
-- changins names of variables classes and files in main folder
 - Improvments of html files
-- tests !!!!
+- tests - adding some more to improve code checking
 
 - changing sqlite on postgresql
 - adding docker

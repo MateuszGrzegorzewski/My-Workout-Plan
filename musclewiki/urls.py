@@ -1,8 +1,8 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
 
-from .views import MuscleViewSet, ExerciseDetailUpdateDeleteAPIView, ExerciseCreateView
-
+from .views import (ExerciseCreateView, ExerciseDetailUpdateDeleteAPIView,
+                    MuscleViewSet)
 
 router = routers.DefaultRouter()
 router.register(r'', MuscleViewSet, basename='muscles')
@@ -13,18 +13,3 @@ urlpatterns = [
          name='exercise-detail-update-delete'),
     path('exercise/create/', ExerciseCreateView.as_view(), name='exercise-create'),
 ]
-
-
-# from . import views
-# router.register(r'exercise/', ExerciseViewSet)
-# router.register(r'<int:pk>/', ExerciseDetailAPIView, basename='exercise-detail')
-
-# urlpatterns = [
-#     path('', include(router.urls)),
-# ]
-
-# urlpatterns = [
-#     path('', views.getMuscles),
-#     path('<int:pk>', views.getExercises),
-
-# ]
