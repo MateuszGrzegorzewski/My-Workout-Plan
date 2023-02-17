@@ -1,47 +1,48 @@
-{% extends "main/base.html" %} {% block content %}
-
-<h1>Plans Template</h1>
-<h3>You can create your plans with your trainings here</h3>
-<a href="{% url 'create-plan' %}">Create your plan - NAME </a>
-<br />
-<a href="{% url 'add-training-to-plan' %}">Add training to your plan </a>
+{% extends "base.html" %} {% block content %}
 <div>
-  {% for plan_name in plan_names %}
+  <h2>Plans</h2>
+  <h4>Create plans with your trainings</h4>
+  <a href="{% url 'create-plan' %}">Create plan</a>
+  <br />
+  <a href="{% url 'add-training-to-plan' %}">Add training to plan </a>
   <div>
-    <hr />
-    <h3>PLAN -- {{plan_name.name}}</h3>
-    <a href="{% url 'update-plan' plan_name.id %}">Edit name of your plan</a>
-    <a href="{% url 'delete-plan' plan_name.id %}">Delete your plan</a>
-
+    {% for plan_name in plan_names %}
     <div>
-      {% for plan in plans %} {% if plan.name.id == plan_name.id %}
-      <div>training -- {{ plan.training }}</div>
-      <a href="{% url 'delete-training-from-plan' plan.id %}"
-        >Delete training from plan</a
-      >
-      <br />
-      <a href="{% url 'training' plan.training.id %}"
-        >Here you can go to the training results page
-      </a>
-      <div>
-        {% for tr_main in trainings %}
-        <div>
-          <hr />
-          <h5>Exercise -- {{tr_main.exercise}}</h5>
-          <div></div>
-          <div>
-            <p>Series -- {{tr_main.series}}</p>
-            <p>Reps -- {{tr_main.reps}}</p>
-            <p>Tempo -- {{tr_main.tempo}}</p>
-            <p>RIR -- {{tr_main.rir}}</p>
-            <p>Rest -- {{tr_main.rest}}</p>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %} {% endfor %}
-    </div>
-  </div>
+      <hr />
+      <h3>PLAN -- {{plan_name.name}}</h3>
+      <a href="{% url 'update-plan' plan_name.id %}">Edit plan</a>
+      <a href="{% url 'delete-plan' plan_name.id %}">Delete plan</a>
 
-  {% endfor %} {% endblock %}
+      <div>
+        {% for plan in plans %} {% if plan.name.id == plan_name.id %}
+        <hr>
+        <h4>training -- {{ plan.training }}</h4>
+        <a href="{% url 'delete-training-from-plan' plan.id %}"
+          >Delete training</a
+        >
+        <br />
+        <a href="{% url 'training' plan.training.id %}"
+          >Go to the training results page
+        </a>
+        <div class="training-exercises">
+          {% for tr_main in trainings %}
+          <div>
+            <h5>Exercise -- {{tr_main.exercise}}</h5>
+            <div></div>
+            <div>
+              <p>Series -- {{tr_main.series}}</p>
+              <p>Reps -- {{tr_main.reps}}</p>
+              <p>Tempo -- {{tr_main.tempo}}</p>
+              <p>RIR -- {{tr_main.rir}}</p>
+              <p>Rest -- {{tr_main.rest}}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+    </div>
+
+    {% endfor %} {% endblock %}
+  </div>
 </div>

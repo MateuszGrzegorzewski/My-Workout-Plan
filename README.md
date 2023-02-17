@@ -25,13 +25,7 @@ The application will be used:
 
 Actual plans:
 
-- Improvments of html files(base.html, plan.html, training_results.html, training.html)
-
-- changing sqlite on postgresql
-- adding docker
-- adding requirements
-
-- develop env and .env.example, protet sensitive data
+- reapir error during get data in plans(everywhere it exists /pk)
 - checking WSGI and ASGI,
 - cleaning code,
 - finishing README

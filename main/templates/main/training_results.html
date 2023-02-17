@@ -1,6 +1,6 @@
-{% extends "main/base.html" %} {% block content %}
+{% extends "base.html" %} {% block content %}
 <h2>{{trainings_name.name}}</h2>
-<div>
+<div class="training-exercises">
   {% for tr_main in trainings_main %} 
   {% if tr_main.name.id == trainings_name.id %}
   <div>
@@ -18,34 +18,31 @@
 </div>
 
 <div>
-  <div>
-    <hr />
-    <a href="{% url 'create-exercise-score' trainings_name.id %}">Create score of exercise </a>
-    <hr />
-  </div>
-  {% for tr in training %} {% if tr.name.id == trainings_name.id %}
-  <div>
-    <h5>Exercise --> {{tr.exercise}}</h5>
+  <hr />
+  <a href="{% url 'create-exercise-score' trainings_name.id %}"
+    >Create score of exercise
+  </a>
+  <hr />
+  <div class="training-exercises-results">
+    {% for tr in training %} {% if tr.name.id == trainings_name.id %}
     <div>
-      <a href="{% url 'update-exercise-score' tr.id %}"
-        >Edit score of exercise
-      </a>
-    </div>
+      <h5>Exercise -- {{tr.exercise}}</h5>
+      <div class="training-exercises-results-edit">
+        <a href="{% url 'update-exercise-score' tr.id %}">Edit</a>
+      </div>
+      <div class="training-exercises-results-delete">
+        <a href="{% url 'delete-exercise-score' tr.id %}">Delete</a>
+      </div>
 
-    <div>
-      <a href="{% url 'delete-exercise-score' tr.id %}"
-        >Delete score of exercise
-      </a>
+      <div>
+        <p>Serie -- {{tr.series}}</p>
+        <p>Weight -- {{tr.weight}}</p>
+        <p>Reps -- {{tr.reps}}</p>
+        <p>Rir -- {{tr.rir}}</p>
+      </div>
     </div>
-    <div>
-      <p>Serie --> {{tr.series}}</p>
-      <p>Weight --> {{tr.weight}}</p>
-      <p>Reps --> {{tr.reps}}</p>
-      <p>Rir --> {{tr.rir}}</p>
-    </div>
-    <hr />
+    {% endif %} {% endfor %}
   </div>
-  {% endif %} {% endfor %}
 </div>
 
 {% endblock %}

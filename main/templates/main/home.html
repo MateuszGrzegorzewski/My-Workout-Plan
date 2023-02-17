@@ -1,20 +1,23 @@
-{% extends "main/base.html" %} {% block content %}
+{% extends "base.html" %} {% block content %}
 
 <h1>My Workout Plan</h1>
-<div>
-  
-  <div>
-    <p>Enter to your trainings</p>
-    <a href = "{% url 'training' %}">Trainings</a>
+<div class="home-links">
+  <div class="home-trainings">
+    <h4>Enter to your trainings</h4>
+    <p>Here you can create your own workouts</p>
+    <a href="{% url 'training' %}">Trainings</a>
   </div>
-  <div>
-    <p>Enter to your plan</p>
-    <a href = "{% url 'plan' %}">Plan</a>
+  <div class="home-plans">
+    <h4>Enter to your plan</h4>
+    <p>Here you can create your own plans from previously created workouts</p>
+    <a href="{% url 'plan' %}">Plans</a>
   </div>
-  <div>
-    <p>Enter to Musclewiki</p>
-    <p>Here you can find different exercises for different muscles</p>
-    <a href = "{% url 'musclewiki:muscles-list' %}">Musclewiki</a>
+  <div class="home-musclewiki">
+    <h4>Enter to Musclewiki</h4>
+    <p>
+      Here you can find and create exercises for different parts of the body
+    </p>
+    <a href="{% url 'musclewiki:muscles-list' %}">Musclewiki</a>
   </div>
 </div>
 
