@@ -18,26 +18,27 @@ The application will be used:
 - Django,
 - Django RESTFramework,
 - HTML,CSS,
-- pytest,
+- unittest,
 - Docker.
 
 ## What is to do
 
 Actual plans:
 
-- Improvments of html files
-- tests - adding some more to improve code checking
+- Improvments of html files(base.html, plan.html, training_results.html, training.html)
 
 - changing sqlite on postgresql
 - adding docker
 - adding requirements
-- adding .env and .env-example
+
+- develop env and .env.example, protet sensitive data
+- checking WSGI and ASGI,
+- cleaning code,
+- finishing README
 
 Others:
 
-- changing API - using Django REST Framework (include checking JSON web tokens and similar things to authentication)
+- changing login and so on (changing manage of accounts). Another app for it, add possibilities login with email, password reset, add avatars. (Django Rest Framework)
 - admin panel
-- improvments of html and little css - grid, flexbox and so on
-- login with using email
-- adding avatars to users
-- password reset
+- improvment frontend of project
+- analise results of trainings

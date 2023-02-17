@@ -22,8 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = "django-insecure-he6t(k7dy$-veqbp^ag=7ri8+!ky*7&g!7ss!*+0&lbe^i1*@*"
-SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY', 'django-insecure-he6t(k7dy$-veqbp^ag=7ri8+!ky*7&g!7ss!*+0&lbe^i1*@*')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -80,13 +79,34 @@ WSGI_APPLICATION = "plans.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'myworkoutplandb',
+        'USER': 'myworkoutplanuser',
+        'PASSWORD': 'secretpassword123',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
+#connection witl railway - quite interesting
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'railway',
+#         'USER': 'postgres',
+#         'PASSWORD': 'yzUD0siLUExbpCJ0FGZD',
+#         'HOST': 'containers-us-west-43.railway.app',
+#         'PORT': '6545',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
