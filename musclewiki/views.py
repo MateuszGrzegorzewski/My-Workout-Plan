@@ -1,5 +1,6 @@
 from django.db import IntegrityError
 from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
@@ -18,7 +19,7 @@ class MuscleViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         try:
             muscle = Muscle.objects.get(pk=pk)
-        except ValueError:
+        except:
             raise Http404
 
         if request.user.is_authenticated:
@@ -50,7 +51,7 @@ class ExerciseDetailUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
         try:
             self.perform_update(serializer)
         except IntegrityError:
-            pass
+            return reverse('')
 
         if getattr(instance, '_prefetched_objects_cache', None):
             instance._prefetched_objects_cache = {}

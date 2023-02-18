@@ -25,9 +25,8 @@ The application will be used:
 
 Actual plans:
 
-- reapir error during get data in plans(everywhere it exists /pk)
 - checking WSGI and ASGI,
-- cleaning code,
+- cleaning code(asgi, wsgi, settings),
 - finishing README
 
 Others:

@@ -399,11 +399,10 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
         url = reverse('musclewiki:muscles-detail',
                       kwargs={"pk": 999})
 
-        with self.assertRaises(ObjectDoesNotExist):
-            response_detail = self.client.get(url)
+        response_detail = self.client.get(url)
 
-            self.assertEqual(response_detail.status_code,
-                             status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_detail.status_code,
+                         status.HTTP_404_NOT_FOUND)
 
     def test_Exercise_View_Set_CREATE_unique_of_name(self):
         self.client.post('/login/', self.credentials_admin)
@@ -416,11 +415,11 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
             "muscle": self.muscle.id,
             'technique': "Technique of exercise"
         }
-        response_create = self.client.post(url, data)
+        response = self.client.post(url, data)
 
         qs = Exercise.objects.all()
 
-        self.assertEqual(response_create.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
         self.assertEqual(qs.count(), 1)
 
     def test_Exercise_View_Set_UPDATE_unique_of_name(self):
@@ -441,8 +440,8 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
             "muscle": self.muscle.id,
             'technique': "Technique of exercise"
         }
-
         self.client.patch(url, data)
+
         qs_update = Exercise.objects.get(id=self.exercise.id)
 
         self.assertNotEqual(qs_update.name, 'Exercise Test New')

@@ -3,12 +3,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, render
+from django.http import Http404
 
 from .forms import (PlanForm, PlanNameForm, TrainingMainForm, TrainingNameForm,
                     TrainingResultForm)
 from .models import Plan, PlanName, TrainingMain, TrainingName, TrainingResult
+
+
+def custom_page_not_found_view(request, exception):
+    return render(request, "errors/404.html", {})
 
 
 def loginPage(request):
@@ -92,7 +97,10 @@ def trainings(request):
 
 @login_required(login_url="login")
 def training(request, pk):
-    trainings_name = TrainingName.objects.get(id=pk)
+    try:
+        trainings_name = TrainingName.objects.get(id=pk)
+    except:
+        raise Http404
     trainings_main = trainings_name.trainingmain_set.all()
     training = trainings_name.trainingresult_set.all()
 
@@ -135,7 +143,7 @@ def createTraining(request):
             )
             return redirect('training')
         except:
-            messages.error(request, """Error occured during create Training. 
+            messages.error(request, """Error occured during create Training.
                     The likely cause is an attempt to create the same exercise.""")
 
     context = {'form': form, "trainings": trainings, 'page': page}
@@ -144,7 +152,10 @@ def createTraining(request):
 
 @login_required(login_url="login")
 def updateTraining(request, pk):
-    training_name = TrainingName.objects.get(id=pk)
+    try:
+        training_name = TrainingName.objects.get(id=pk)
+    except:
+        raise Http404
     form = TrainingNameForm(instance=training_name)
 
     if request.user != training_name.user:
@@ -157,7 +168,7 @@ def updateTraining(request, pk):
                 form.save()
                 return redirect('training')
         except:
-            messages.error(request, """Error occured during create Training. 
+            messages.error(request, """Error occured during create Training.
                     The likely cause is an attempt to create the same training.""")
 
     context = {'form': form}
@@ -166,7 +177,10 @@ def updateTraining(request, pk):
 
 @login_required(login_url="login")
 def deleteTraining(request, pk):
-    training_name = TrainingName.objects.get(id=pk)
+    try:
+        training_name = TrainingName.objects.get(id=pk)
+    except:
+        raise Http404
 
     if request.user != training_name.user:
         raise PermissionDenied
@@ -180,7 +194,10 @@ def deleteTraining(request, pk):
 
 @login_required(login_url="login")
 def updateExercise(request, pk):
-    training = TrainingMain.objects.get(id=pk)
+    try:
+        training = TrainingMain.objects.get(id=pk)
+    except:
+        raise Http404
     form = TrainingMainForm(instance=training)
 
     if request.user != training.user:
@@ -201,7 +218,7 @@ def updateExercise(request, pk):
             training.save()
             return redirect('training')
         except:
-            messages.error(request, """Error occured during updating Training. 
+            messages.error(request, """Error occured during updating Training.
                     The likely cause is an attempt to create the same exercise.""")
 
     context = {'form': form, "training": training}
@@ -210,7 +227,10 @@ def updateExercise(request, pk):
 
 @login_required(login_url="login")
 def deleteExercise(request, pk):
-    training = TrainingMain.objects.get(id=pk)
+    try:
+        training = TrainingMain.objects.get(id=pk)
+    except:
+        raise Http404
 
     if request.user != training.user:
         raise PermissionDenied
@@ -234,7 +254,7 @@ def createExerciseScores(request, pk_training):
         try:
             exercise = TrainingMain.objects.filter(
                 user=request.user).filter(name=training).get(exercise=exercise_req)
-        except ObjectDoesNotExist:
+        except:
             pass
 
         integers = ["weight", "reps", "rir"]
@@ -252,7 +272,7 @@ def createExerciseScores(request, pk_training):
             )
             return redirect('training', pk=training.id)
         except:
-            messages.error(request, """Error occured during create score of training. 
+            messages.error(request, """Error occured during create score of training.
                                     The likely cause is an attempt to add exercise or training which does not exist.""")
 
     context = {'page': page, 'form': form,
@@ -263,7 +283,10 @@ def createExerciseScores(request, pk_training):
 
 @login_required(login_url="login")
 def updateExerciseScores(request, pk):
-    training_result = TrainingResult.objects.get(id=pk)
+    try:
+        training_result = TrainingResult.objects.get(id=pk)
+    except:
+        raise Http404
     form = TrainingResultForm(instance=training_result)
 
     if request.user != training_result.user:
@@ -289,7 +312,10 @@ def updateExerciseScores(request, pk):
 
 @login_required(login_url="login")
 def deleteExerciseScores(request, pk):
-    training_result = TrainingResult.objects.get(id=pk)
+    try:
+        training_result = TrainingResult.objects.get(id=pk)
+    except:
+        raise Http404
 
     if request.user != training_result.user:
         raise PermissionDenied
@@ -327,7 +353,10 @@ def createPlan(request):
 
 @login_required(login_url="login")
 def updatePlan(request, pk):
-    plan = PlanName.objects.get(id=pk)
+    try:
+        plan = PlanName.objects.get(id=pk)
+    except:
+        raise Http404
     form = PlanNameForm(instance=plan)
 
     if request.user != plan.user:
@@ -350,7 +379,10 @@ def updatePlan(request, pk):
 
 @login_required(login_url="login")
 def deletePlan(request, pk):
-    plan = PlanName.objects.get(id=pk)
+    try:
+        plan = PlanName.objects.get(id=pk)
+    except:
+        raise Http404
 
     if request.user != plan.user:
         raise PermissionDenied
@@ -377,7 +409,7 @@ def addTrainingToPlan(request):
                 user=request.user).get(name=name)
             training_name = TrainingName.objects.filter(
                 user=request.user).get(name=training)
-        except ObjectDoesNotExist:
+        except:
             pass
 
         try:
@@ -399,7 +431,10 @@ def addTrainingToPlan(request):
 
 @login_required(login_url="login")
 def deleteTrainingFromPlan(request, pk):
-    plan = Plan.objects.get(id=pk)
+    try:
+        plan = Plan.objects.get(id=pk)
+    except:
+        raise Http404
 
     if request.user != plan.user:
         raise PermissionDenied

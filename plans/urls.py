@@ -6,3 +6,5 @@ urlpatterns = [
     path("", include("main.urls")),
     path("musclewiki/", include("musclewiki.urls")),
 ]
+
+handler404 = 'main.views.custom_page_not_found_view'
