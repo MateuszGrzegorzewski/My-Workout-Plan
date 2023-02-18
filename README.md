@@ -25,8 +25,6 @@ The application will be used:
 
 Actual plans:
 
-- checking WSGI and ASGI,
-- cleaning code(asgi, wsgi, settings),
 - finishing README
 
 Others:

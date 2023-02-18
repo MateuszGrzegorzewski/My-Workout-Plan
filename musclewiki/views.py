@@ -2,8 +2,7 @@ from django.db import IntegrityError
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from rest_framework import generics, status, viewsets
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .models import Exercise, Muscle

@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import redirect, render
 from django.http import Http404
+from django.shortcuts import redirect, render
 
 from .forms import (PlanForm, PlanNameForm, TrainingMainForm, TrainingNameForm,
                     TrainingResultForm)

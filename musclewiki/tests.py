@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.test import TransactionTestCase
 from django.urls import reverse
 from rest_framework import status
