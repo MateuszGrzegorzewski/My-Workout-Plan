@@ -1,35 +1,61 @@
-## My workout plan
+# My Workout Plan
 
-An application written in Python in Django to create professional training plans.
-The Application is under development.
-Backend will be priority. In the case of Frontend, it will be quite simple.
+My Workout Plan is a Python Django application that allows users to create professional training plans and search for appropriate exercises for different muscle groups. The project focuses on the backend.
 
 ## Project Description
 
-The project will be have some functionalities:
+The project consists of two main parts. One is responsible for training plans. Its functionalities are:
 
-- Creating, editing, deleting trainins,
-- Creating, editing, deleting plans,
-- Adding training results to monitor progress,
-- Possibility to search for exercises for specific muscle parts.
+- creating customized trainings,
+- creating plans,
+- adding training results to monitor progress.
 
-The application will be used:
+The second part of the project is the Musclewiki app. Its functionalities are:
+
+- searching for exercises for specific muscle groups,
+- creating muscle groups and exercises but only by admin,
+- adding custom exercises by the user.
+
+The application uses technologies such as:
 
 - Django,
 - Django RESTFramework,
-- HTML,CSS,
+- HTML/CSS,
 - unittest,
 - Docker.
 
-## What is to do
+Thanks to this project, I acquired skills in using the Django framework and the DjangoRESTFramework. Among other things, I gained experience in creating a complex CRUD system and implementing effective validation and permission mechanisms. What's more, I acquired skills in managing user accounts, including login, registration and logout.
 
-Actual plans:
+In addition, I was able to build a simple frontend presenting the functionality of the application.
 
-- finishing README
+Another aspect was the creation of complete tests to verify the written code.
 
-Others:
+As for future improvements, I intend to improve account management by implementing features such as resetting passwords and enabling login via email, as well as increasing security. I also plan to refine the front-end of the project to enable a clear way to use the application.
 
-- changing login and so on (changing manage of accounts). Another app for it, add possibilities login with email, password reset, add avatars. (Django Rest Framework)
-- admin panel
-- improvment frontend of project
-- analise results of trainings
+In addition, I intend to add a function to analyze training results, allowing users to determine their progress.
+
+## How to Install and Run the Project
+
+1. Create a .env file. An example of a finished file is:
+
+    >DJANGO_SECRET_KEY=super-secret-key123  
+    >DEBUG=1  
+    >DJANGO_ALLOWED_HOST=127.0.0.1 localhost  
+    >POSTGRES_DB=myworkoutplandb  
+    >POSTGRES_USER=myworkoutplanuser  
+    >POSTGRES_PASSWORD=secretpassword123
+
+2. Run the following command to start the application:
+   `docker compose up`
+
+3. The application will be available at: https://localhost:8000/
+
+## How to run tests
+
+1. Start the application using the command in the previous section.
+2. Get the ID of the web container by running the following command:
+   `docker ps`
+3. Enter the web container by running the following command:
+   `docker exec -it {id of container} bash`
+4. Run tests with the following command:
+   `python manage.py tests`
