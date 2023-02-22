@@ -34,28 +34,47 @@ As for future improvements, I intend to improve account management by implementi
 
 In addition, I intend to add a function to analyze training results, allowing users to determine their progress.
 
-## How to Install and Run the Project
+## How to Install the Project
 
-1. Create a .env file. An example of a finished file is:
+1. Installation of all dependencies for the project:  
+   `pip install -r requirements.txt`
 
-    >DJANGO_SECRET_KEY=super-secret-key123  
-    >DEBUG=1  
-    >DJANGO_ALLOWED_HOST=127.0.0.1 localhost  
-    >POSTGRES_DB=myworkoutplandb  
-    >POSTGRES_USER=myworkoutplanuser  
-    >POSTGRES_PASSWORD=secretpassword123
+2. Create a .env file. An example of a finished file is:
 
-2. Run the following command to start the application:
+   > DJANGO_SECRET_KEY=super-secret-key123  
+   > DEBUG=1  
+   > DJANGO_ALLOWED_HOST=127.0.0.1 localhost  
+   > POSTGRES_DB=myworkoutplandb  
+   > POSTGRES_USER=myworkoutplanuser  
+   > POSTGRES_PASSWORD=secretpassword123
+
+3. Run the following command to start the application:
    `docker compose up`
 
-3. The application will be available at: https://localhost:8000/
+4. Get the ID of the web container by running the following command:
+   `docker ps`
+
+5. Enter the web container by running the following command:
+   `docker exec -it {id of container} bash`
+
+6. Database migration:  
+   `python manage.py migrate`
+
+7. The application will be available at: https://localhost:8000/
+
+## How to run the Project
+
+If you have installed the application in the correct way is enough:  
+`docker compose up`
+
+And the application will be available at: https://localhost:8000/
 
 ## How to run tests
 
-1. Start the application using the command in the previous section.
+1. Start the application using the commands in the previous sections.
 2. Get the ID of the web container by running the following command:
    `docker ps`
 3. Enter the web container by running the following command:
    `docker exec -it {id of container} bash`
 4. Run tests with the following command:
-   `python manage.py tests`
+   `python manage.py test`
