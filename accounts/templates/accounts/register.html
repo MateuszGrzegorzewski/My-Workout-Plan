@@ -1,0 +1,18 @@
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<div>
+  <form method="post" action="{% url 'register' %}">
+    {% csrf_token %} 
+    {{form.as_p}}
+    <button type="submit">Register</button>
+  </form>
+
+  <p>Already signed up?</p>
+  <a href="{% url 'login' %}">Login</a>
+</div>

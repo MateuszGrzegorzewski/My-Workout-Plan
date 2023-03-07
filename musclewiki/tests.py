@@ -63,7 +63,7 @@ class TestMusclewikiViews(APITestCase):
         self.exercise.muscle.add(self.muscle.id)
 
     def test_CRUD_Muscle_View_Set(self):
-        self.client.post('/login/', self.credentials_admin)
+        self.client.post(reverse('login'), self.credentials_admin)
 
         url_list = reverse('musclewiki:muscles-list')
 
@@ -111,7 +111,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs_delete.count(), 1)
 
     def test_CRUD_Muscle_View_Set_with_random_user(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials)
 
         url_list = reverse('musclewiki:muscles-list')
 
@@ -209,7 +209,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs_delete.count(), 1)
 
     def test_Exercise_View_Set_CREATE(self):
-        self.client.post('/login/', self.credentials_admin)
+        self.client.post(reverse('login'), self.credentials_admin)
 
         url = reverse('exercise-create')
 
@@ -244,7 +244,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs.count(), 2)
 
     def test_Exercise_View_Set_DETAIL_UPDATE_DELETE_with_admin(self):
-        self.client.post('/login/', self.credentials_admin)
+        self.client.post(reverse('login'), self.credentials_admin)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise.id})
@@ -307,7 +307,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs_delete.count(), 2)
 
     def test_Exercise_View_Set_DETAIL_UPDATE_DELETE_permissions_with_random_user(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise.id})
@@ -340,7 +340,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs_delete.count(), 2)
 
     def test_Exercise_View_Set_DETAIL_UPDATE_DELETE_permissions_with_admin(self):
-        self.client.post('/login/', self.credentials_admin)
+        self.client.post(reverse('login'), self.credentials_admin)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise_user.id})
@@ -393,7 +393,7 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
         self.exercise.muscle.add(self.muscle.id)
 
     def test_Muscle_View_Set_with_wrong_values_in_endpoint(self):
-        self.client.post('/login/', self.credentials_admin)
+        self.client.post(reverse('login'), self.credentials_admin)
 
         url = reverse('musclewiki:muscles-detail',
                       kwargs={"pk": 999})
@@ -404,7 +404,7 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
                          status.HTTP_404_NOT_FOUND)
 
     def test_Exercise_View_Set_CREATE_unique_of_name(self):
-        self.client.post('/login/', self.credentials_admin)
+        self.client.post(reverse('login'), self.credentials_admin)
 
         url = reverse('exercise-create')
 
@@ -422,7 +422,7 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_Exercise_View_Set_UPDATE_unique_of_name(self):
-        self.client.post('/login/', self.credentials_admin)
+        self.client.post(reverse('login'), self.credentials_admin)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise.id})

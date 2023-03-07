@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -45,119 +44,45 @@ class TestMainModels(TestCase):
         self.assertEqual(str(self.plan_name), 'Plan Test')
 
 
-class TestAccount(TestCase):
+class TestMainViews(TestCase):
+    @classmethod
     def setUp(self):
         self.credentials = {
             'username': 'testuser',
             'password': 'secret'}
 
-        self.credentials_invalid = {
-            'username': 'testuser2',
-            'password': 'secret1'}
-
-        self.credentials_register = {
-            'username': 'usertest',
-            'password1': 'Mypassword123',
-            'password2': 'Mypassword123'}
-
-        self.credentials_register_invalid = {
-            'username': 'usertest1',
-            'password1': 'Mypassword1',
-            'password2': 'Mypassword123'}
-
-        User.objects.create_user(**self.credentials)
-
-    def test_login(self):
-        response_to_test_template = self.client.get('/login/')
-        response = self.client.post('/login/', self.credentials, follow=True)
-
-        self.assertTemplateUsed(response_to_test_template,
-                                'main/login_register.html')
-        self.assertTrue(response.context['user'].is_authenticated)
-        self.assertRedirects(response, '/')
-
-    def test_login_invalid(self):
-        response_invalid = self.client.post(
-            '/login/', self.credentials_invalid, follow=True)
-
-        self.assertFalse(response_invalid.context['user'].is_authenticated)
-
-    def test_login_user_which_is_authenticated(self):
-        self.client.post('/login/', self.credentials, follow=True)
-        response = self.client.post('/login/', self.credentials, follow=True)
-
-        self.assertRedirects(response, '/')
-
-    def test_logout(self):
-        response_login = self.client.post(
-            '/login/', self.credentials, follow=True)
-
-        self.assertTrue(response_login.context['user'].is_authenticated)
-
-        response = self.client.post('/logout/', follow=True)
-
-        self.assertFalse(response.context['user'].is_authenticated)
-        self.assertRedirects(response, '/')
-
-    def test_register(self):
-        response_to_test_template = self.client.get('/register/')
-        response = self.client.post(
-            '/register/', follow=True, data=self.credentials_register)
-
-        self.assertTemplateUsed(
-            response_to_test_template, template_name='main/login_register.html')
-
-        self.assertEqual(response.status_code, 200)
-        users = get_user_model().objects.all()
-        self.assertEqual(users.count(), 2)
-
-    def test_register_invalid(self):
-        response = self.client.post(
-            '/register/', follow=True, data=self.credentials_register_invalid)
-
-        self.assertContains(
-            response, "Unsuccessful registration. Invalid information.")
-
-
-class TestMainViews(TestCase):
-    @classmethod
-    def setUp(cls):
-        cls.credentials = {
-            'username': 'testuser',
-            'password': 'secret'}
-
-        cls.credentials2 = {
+        self.credentials2 = {
             'username': 'testuser2',
             'password': 'secret'}
 
-        cls.user = User.objects.create_user(**cls.credentials)
-        cls.user2 = User.objects.create_user(**cls.credentials2)
+        self.user = User.objects.create_user(**self.credentials)
+        self.user2 = User.objects.create_user(**self.credentials2)
 
-        cls.training_name = TrainingName.objects.create(
-            user=cls.user,
+        self.training_name = TrainingName.objects.create(
+            user=self.user,
             name="Training Test"
         )
 
-        cls.training_main = TrainingMain.objects.create(
-            user=cls.user,
-            name_id=cls.training_name.pk,
+        self.training_main = TrainingMain.objects.create(
+            user=self.user,
+            name_id=self.training_name.pk,
             exercise="Exercise Test")
 
-        cls.training_result = TrainingResult.objects.create(
-            user=cls.user,
-            name_id=cls.training_name.pk,
-            exercise_id=cls.training_main.pk,
+        self.training_result = TrainingResult.objects.create(
+            user=self.user,
+            name_id=self.training_name.pk,
+            exercise_id=self.training_main.pk,
             series="Serie Test")
 
-        cls.plan_name = PlanName.objects.create(
-            user=cls.user,
+        self.plan_name = PlanName.objects.create(
+            user=self.user,
             name="Plan Test"
         )
 
-        cls.plan = Plan.objects.create(
-            user=cls.user,
-            name_id=cls.plan_name.pk,
-            training_id=cls.training_name.pk
+        self.plan = Plan.objects.create(
+            user=self.user,
+            name_id=self.plan_name.pk,
+            training_id=self.training_name.pk
         )
 
     def test_home_view_GET(self):
@@ -167,7 +92,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'main/home.html')
 
     def test_plan_view_GET(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.get('/plan/')
 
@@ -178,7 +103,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'main/plan.html')
 
     def test_plan_view_POST(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post('/create-plan/', follow=True, data={
             'user': self.user,
@@ -194,7 +119,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.name, 'Plan Test 2')
 
     def test_plan_view_POST_with_incorrect_values(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post('/create-plan/', follow=True, data={
             'user': self.user,
@@ -204,7 +129,7 @@ class TestMainViews(TestCase):
         self.assertContains(response, 'Error occured during')
 
     def test_plan_view_UPDATE(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('update-plan', args=(self.plan_name.id,)), follow=True, data={
             'name': 'Plan Test 1'
@@ -220,7 +145,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.name, 'Plan Test 1')
 
     def test_nonexistent_plan_view_UPDATE(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('update-plan', args=(999,)), follow=True, data={
             'name': 'Plan Test 1'
@@ -229,7 +154,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_plan_view_UPDATE_with_incorrect_values(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         PlanName.objects.create(
             user=self.user,
@@ -243,7 +168,7 @@ class TestMainViews(TestCase):
         self.assertContains(response, "Error occured during")
 
     def test_plan_view_UPDATE_another_user(self):
-        self.client.post('/login/', self.credentials2, follow=True)
+        self.client.post(reverse('login'), self.credentials2, follow=True)
 
         response = self.client.post(reverse('update-plan', args=[self.plan_name.id]), data={
             'name': 'Plan Test I'
@@ -255,7 +180,7 @@ class TestMainViews(TestCase):
         self.assertNotEqual(qs.name, 'Plan Test I')
 
     def test_plan_view_DELETE(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response_to_test_template = self.client.get(
             reverse('delete-plan', args=[self.plan_name.id]))
@@ -269,7 +194,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 0)
 
     def test_nonexistent_plan_view_DELETE(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(
             reverse('delete-plan', args=[999]))
@@ -277,7 +202,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_plan_view_DELETE_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.post(
             reverse('delete-plan', args=[self.plan_name.id]))
@@ -288,7 +213,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_training_plan_view_POST(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         training_name = TrainingName.objects.create(
             user=self.user,
@@ -317,7 +242,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.training.name, "Training Test New")
 
     def test_training_plan_view_POST_with_incorrect_values(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post('/add-training-to-plan/', data={
             'user': self.user,
@@ -331,7 +256,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_training_plan_view_DELETE(self):
-        self.client.post('/login/', self.credentials, follow=True)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response_to_test_template = self.client.get(
             reverse('delete-training-from-plan', args=[self.plan.id]))
@@ -345,7 +270,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 0)
 
     def test_nonexistent_training_plan_view_DELETE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(
             reverse('delete-training-from-plan', args=[999]))
@@ -353,7 +278,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_training_plan_view_DELETE_another_user(self):
-        self.client.post('/login/', self.credentials2, follow=True)
+        self.client.post(reverse('login'), self.credentials2, follow=True)
 
         response = self.client.post(
             reverse('delete-training-from-plan', args=[self.plan.id]))
@@ -364,7 +289,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_trainings_view_GET(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.get('/training/')
 
@@ -372,7 +297,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'main/training.html')
 
     def test_training_results_view_GET(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.get(
             reverse('training', args=[self.training_name.id]))
@@ -381,7 +306,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'main/training_results.html')
 
     def test_training_results_view_GET_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.get(
             reverse('training', args=[self.training_name.id]))
@@ -389,7 +314,7 @@ class TestMainViews(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_nonexistent_training_results_view_GET(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.get(
             reverse('training', args=[999]))
@@ -397,7 +322,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_training_and_exercise_view_POST_without_earlier_create_training_name(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post('/create-training/', follow=True, data={
             'user': self.user,
@@ -423,12 +348,13 @@ class TestMainViews(TestCase):
         self.assertEqual(qs_main.tempo, '2-1-2')
 
     def test_create_training_without_authentication(self):
+        self.client.post(reverse('logout'))
         url = reverse('create-training')
         response = self.client.get(url)
         self.assertRedirects(response, reverse('login') + '?next=' + url)
 
     def test_training_and_exercise_view_POST_with_earlier_create_training_name(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post('/create-training/', data={
             'user': self.user,
@@ -443,7 +369,7 @@ class TestMainViews(TestCase):
         self.assertIsNone(qs.series)
 
     def test_training_and_exercise_view_POST_with_incorrect_values(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         try:
             self.client.post(reverse('create-training'), follow=True, data={
@@ -459,7 +385,7 @@ class TestMainViews(TestCase):
             pass
 
     def test_training_view_UPDATE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('update-training', args=[self.training_name.id]), follow=True, data={
             'name': 'Training Test XX'
@@ -475,7 +401,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.name, 'Training Test XX')
 
     def test_nonexistent_training_view_UPDATE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(
             reverse('update-training', args=[999]), data={'name': 'Training Test New'})
@@ -483,7 +409,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_training_view_UPDATE_with_incorrect_values(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         TrainingName.objects.create(
             user=self.user,
@@ -497,7 +423,7 @@ class TestMainViews(TestCase):
         self.assertContains(response, "Error occured during create")
 
     def test_training_view_UPDATE_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.post(reverse('update-training', args=[self.training_name.id]), follow=True, data={
             'name': 'Training Test DD'
@@ -509,7 +435,7 @@ class TestMainViews(TestCase):
         self.assertNotEqual(qs.name, 'Training Test DD')
 
     def test_training_view_DELETE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response_to_test_template = self.client.get(
             reverse('delete-training', args=[self.training_name.id]))
@@ -526,7 +452,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 0)
 
     def test_training_view_DELETE_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.post(
             reverse('delete-training', args=[self.training_name.id]), follow=True)
@@ -537,7 +463,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_nonexistent_training_view_DELETE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.delete(
             reverse('delete-training', args=[999]))
@@ -545,7 +471,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_exercise_view_UPDATE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response_to_test_template = self.client.get(
             reverse('update-exercise', args=[self.training_main.id]))
@@ -567,7 +493,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.tempo, '2-1-2')
 
     def test_exercise_view_UPDATE_with_incorrect_data(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         TrainingMain.objects.create(
             user=self.user,
@@ -581,7 +507,7 @@ class TestMainViews(TestCase):
         self.assertContains(response, "Error occured during")
 
     def test_nonexistent_exercise_view_UPDATE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('update-exercise', args=[999]), data={
             'exercise': "Exercise New"
@@ -590,7 +516,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_exercise_view_UPDATE_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.post(reverse('update-exercise', args=[self.training_main.id]), follow=True, data={
             'series': 4
@@ -602,7 +528,7 @@ class TestMainViews(TestCase):
         self.assertIsNone(qs.series)
 
     def test_exercise_view_DELETE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response_to_test_template = self.client.get(
             reverse('delete-exercise', args=[self.training_main.id]))
@@ -616,7 +542,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 0)
 
     def test_nonexistent_exercise_view_DELETE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(
             reverse('delete-exercise', args=[999]))
@@ -624,7 +550,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_exercise_view_DELETE_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.post(
             reverse('delete-exercise', args=[self.training_main.id]), follow=True)
@@ -635,7 +561,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_training_results_view_POST(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('create-exercise-score', args=[self.training_name.id]), data={
             'user': self.user,
@@ -654,7 +580,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.series, 'Serie 1')
 
     def test_training_results_view_POST_with_incorrect_values(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('create-exercise-score', args=[self.training_name.id]), follow=True, data={
             'user': self.user,
@@ -666,7 +592,7 @@ class TestMainViews(TestCase):
         self.assertContains(response, "Error occured during")
 
     def test_training_results_view_UPDATE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('update-exercise-score', args=[self.training_result.id]), data={
             'series': 'Serie 1'
@@ -682,7 +608,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.series, 'Serie 1')
 
     def test_nonexistent_training_results_view_UPDATE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(reverse('update-exercise-score', args=[999]), data={
             'series': 'Serie 1'
@@ -691,7 +617,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_training_results_view_UPDATE_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.post(reverse('update-exercise-score', args=[self.training_result.id]), data={
             'series': 'Serie 1'
@@ -703,7 +629,7 @@ class TestMainViews(TestCase):
         self.assertNotEqual(qs.series, 'Serie 1')
 
     def test_training_results_view_DELETE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response_to_test_template = self.client.get(
             reverse('delete-exercise-score', args=[self.training_result.id]))
@@ -718,7 +644,7 @@ class TestMainViews(TestCase):
         self.assertEqual(qs.count(), 0)
 
     def test_nonexistent_training_results_view_DELETE(self):
-        self.client.post('/login/', self.credentials)
+        self.client.post(reverse('login'), self.credentials, follow=True)
 
         response = self.client.post(
             reverse('delete-exercise-score', args=[999]))
@@ -726,7 +652,7 @@ class TestMainViews(TestCase):
         self.assertTemplateUsed(response, 'errors/404.html')
 
     def test_training_results_view_DELETE_another_user(self):
-        self.client.post('/login/', self.credentials2)
+        self.client.post(reverse('login'), self.credentials2)
 
         response = self.client.post(
             reverse('delete-exercise-score', args=[self.training_result.id]))
