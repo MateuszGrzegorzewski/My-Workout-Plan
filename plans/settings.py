@@ -9,6 +9,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 DEBUG = str(os.environ.get('DEBUG')) == "1"
 
+
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOST").split(' ')
 
 
