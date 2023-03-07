@@ -418,7 +418,7 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
 
         qs = Exercise.objects.all()
 
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(qs.count(), 1)
 
     def test_Exercise_View_Set_UPDATE_unique_of_name(self):

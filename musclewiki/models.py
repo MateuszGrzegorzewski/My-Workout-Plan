@@ -5,6 +5,10 @@ from django.contrib.auth.models import User
 class Muscle(models.Model):
     name = models.CharField(max_length=30, unique=True)
 
+    @property
+    def exercise_create_url(self):
+        return "/musclewiki/exercise/"
+
     def __str__(self):
         return self.name
 
