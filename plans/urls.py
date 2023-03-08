@@ -5,6 +5,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("accounts.urls")),
     path("musclewiki/", include("musclewiki.urls")),
+    path("routines/", include("routines.urls")),
     path("", include("main.urls")),
 ]
 
