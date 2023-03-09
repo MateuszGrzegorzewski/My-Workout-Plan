@@ -1,7 +1,5 @@
-from rest_framework import generics, viewsets
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from rest_framework.response import Response
+from rest_framework import viewsets, mixins
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
 from .models import PlanModel, TrainingModel, TrainingExerciseModel, TrainingParametersModel
@@ -28,24 +26,47 @@ class PlanPagination(PageNumberPagination):
 
 
 class TrainingExerciseViewSet(viewsets.ModelViewSet):
-    queryset = TrainingExerciseModel.objects.all()
     serializer_class = TrainingExerciseSerializer
     pagination_class = TrainingExercisePagination
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = TrainingExerciseModel.objects.filter(user=user)
+        return queryset
 
 
 class TrainingViewSet(viewsets.ModelViewSet):
-    queryset = TrainingModel.objects.all()
     serializer_class = TrainingSerializer
     pagination_class = TrainingPagination
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = TrainingModel.objects.filter(user=user)
+        return queryset
 
 
-class TrainingParametersViewSet(viewsets.ModelViewSet):
-    queryset = TrainingParametersModel.objects.all()
+class TrainingParametersViewSet(mixins.CreateModelMixin,
+                                mixins.RetrieveModelMixin,
+                                mixins.UpdateModelMixin,
+                                mixins.DestroyModelMixin,
+                                viewsets.GenericViewSet):
     serializer_class = TrainingParametersSerializer
     pagination_class = TrainingPagination
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        queryset = TrainingParametersModel.objects.filter(user=user)
+        return queryset
 
 class PlanViewSet(viewsets.ModelViewSet):
-    queryset = PlanModel.objects.all()
     serializer_class = PlanSerializer
     pagination_class = PlanPagination
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = PlanModel.objects.filter(user=user)
+        return queryset
