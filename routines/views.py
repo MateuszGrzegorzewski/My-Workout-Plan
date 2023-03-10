@@ -1,10 +1,12 @@
-from rest_framework import viewsets, mixins
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
-from .models import PlanModel, TrainingModel, TrainingExerciseModel, TrainingParametersModel
+from .models import (PlanModel, TrainingExerciseModel, TrainingModel,
+                     TrainingParametersModel)
 from .serializers import (PlanSerializer, TrainingExerciseSerializer,
-                          TrainingParametersSerializer, TrainingSerializer)
+                          TrainingParametersSerializer, TrainingResultModel,
+                          TrainingResultSerializer, TrainingSerializer)
 
 
 class TrainingExercisePagination(PageNumberPagination):
@@ -61,6 +63,7 @@ class TrainingParametersViewSet(mixins.CreateModelMixin,
         queryset = TrainingParametersModel.objects.filter(user=user)
         return queryset
 
+
 class PlanViewSet(viewsets.ModelViewSet):
     serializer_class = PlanSerializer
     pagination_class = PlanPagination
@@ -69,4 +72,15 @@ class PlanViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = PlanModel.objects.filter(user=user)
+        return queryset
+
+
+class TrainingResultViewSet(viewsets.ModelViewSet):
+    serializer_class = TrainingResultSerializer
+    pagination_class = TrainingPagination
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = TrainingResultModel.objects.filter(user=user)
         return queryset

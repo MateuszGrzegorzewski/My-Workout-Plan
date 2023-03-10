@@ -1,8 +1,10 @@
+import re
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from .models import (PlanModel, TrainingExerciseModel, TrainingModel,
-                     TrainingParametersModel)
+                     TrainingParametersModel, TrainingResultModel)
 
 
 def current_user():
@@ -44,6 +46,30 @@ class TrainingParametersSerializer(serializers.ModelSerializer):
         ids = TrainingExerciseModel.objects.filter(user=user)
         if value not in ids:
             raise serializers.ValidationError("Error. Improper exercise")
+        return value
+
+    def validate_reps(self, value):
+        if value and not value.isdigit() and not re.match(r'^[1-9999]+-[1-9999]+$', value):
+            raise serializers.ValidationError(
+                'Reps must be a number or number-number (e.g. 5 or 5-8).')
+        return value
+
+    def validate_tempo(self, value):
+        if value and not re.match(r'^[0-9,X][0-9,X][0-9,X][0-9,X]+$', value):
+            raise serializers.ValidationError(
+                'The tempo must be written in this way, e.g. 2011 oraz 31X1')
+        return value
+
+    def validate_rir(self, value):
+        if value and not value.isdigit() and not re.match(r'^[0-10]+-[0-10]+$', value):
+            raise serializers.ValidationError(
+                'RIR must be a number or number-number (e.g. 1 or 1-2).')
+        return value
+
+    def validate_rest(self, value):
+        if value and value % 0.5 != 0:
+            raise serializers.ValidationError(
+                'Rest must be a number or a decimal number ending with .5 (e.g. 1.5 or 3)')
         return value
 
 
@@ -95,4 +121,27 @@ class PlanSerializer(serializers.ModelSerializer):
         if value not in ids:
             raise serializers.ValidationError(
                 "Error. Improper training")
+        return value
+
+
+class TrainingResultSerializer(serializers.ModelSerializer):
+    user = current_user()
+    url_detail = serializers.HyperlinkedIdentityField(
+        view_name='training_result-detail')
+    exercise_name = serializers.ReadOnlyField(source='training.name.name')
+    training_name = serializers.ReadOnlyField(source='training.exercise.name')
+    training_series = serializers.ReadOnlyField(source='training.series')
+
+    class Meta:
+        model = TrainingResultModel
+        fields = '__all__'
+        validators = [UniqueTogetherValidator(
+            queryset=TrainingResultModel.objects.all(), fields=['user', 'training', 'date', 'serie_nr'], message="It is impossible to set the same serie for today's training")]
+
+    def validate_serie_nr(self, value):
+        training = self.initial_data.get('training')
+
+        if value > TrainingParametersModel.objects.get(id=training).series:
+            raise serializers.ValidationError(
+                "Error. Saved training has fewer series")
         return value
