@@ -1,0 +1,14 @@
+[
+  { "model": "musclewiki.muscle", "pk": 1, "fields": { "name": "forearms" } },
+  { "model": "musclewiki.muscle", "pk": 2, "fields": { "name": "biceps" } },
+  { "model": "musclewiki.muscle", "pk": 3, "fields": { "name": "triceps" } },
+  { "model": "musclewiki.muscle", "pk": 4, "fields": { "name": "shoulders" } },
+  { "model": "musclewiki.muscle", "pk": 5, "fields": { "name": "chest" } },
+  { "model": "musclewiki.muscle", "pk": 6, "fields": { "name": "ABS" } },
+  { "model": "musclewiki.muscle", "pk": 7, "fields": { "name": "back" } },
+  { "model": "musclewiki.muscle", "pk": 8, "fields": { "name": "glutes" } },
+  { "model": "musclewiki.muscle", "pk": 9, "fields": { "name": "quads" } },
+  { "model": "musclewiki.muscle", "pk": 10, "fields": { "name": "hamstrings" } },
+  { "model": "musclewiki.muscle", "pk": 11, "fields": { "name": "adductors" } },
+  { "model": "musclewiki.muscle", "pk": 12, "fields": { "name": "calves" } }
+]
