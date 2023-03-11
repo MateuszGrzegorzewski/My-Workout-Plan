@@ -9,8 +9,7 @@ router.register(r'', MuscleViewSet, basename='muscles')
 
 urlpatterns = [
     path('exercise/', ExerciseCreateView.as_view(), name='exercise-create'),
-    path('exercise/<int:pk>/', ExerciseDetailUpdateDeleteAPIView.as_view(),
+    path('exercise/<str:pk>/', ExerciseDetailUpdateDeleteAPIView.as_view(),
          name='exercise-detail-update-delete'),
-    path("", include((router.urls, 'musclewiki'))),
-    
+    path("", include(router.urls)),  
 ]

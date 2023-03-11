@@ -21,7 +21,7 @@ class MuscleSerializer(serializers.ModelSerializer):
 
         if request is None:
             return None
-        return reverse("musclewiki:muscles-detail", kwargs={"pk": obj.pk}, request=request)
+        return reverse("muscles-detail", kwargs={"pk": obj.pk}, request=request)
 
 
 class ExerciseSerializer(serializers.ModelSerializer):

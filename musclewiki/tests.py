@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from django.urls import reverse
@@ -65,14 +67,15 @@ class TestMusclewikiViews(APITestCase):
     def test_CRUD_Muscle_View_Set(self):
         self.client.post(reverse('login'), self.credentials_admin)
 
-        url_list = reverse('musclewiki:muscles-list')
+        url_list = reverse('muscles-list')
 
         response_list = self.client.get(url_list)
+        response_content = json.loads(response_list.content)['results']
 
         qs_list = Muscle.objects.all()
 
         self.assertEqual(response_list.status_code, status.HTTP_200_OK)
-        self.assertEqual(qs_list.count(), 1)
+        self.assertEqual(len(response_content), qs_list.count())
 
         data = {
             "name": 'Muscle Test2'
@@ -84,7 +87,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(response_create.status_code, status.HTTP_201_CREATED)
         self.assertEqual(qs_create.count(), 2)
 
-        url_detail = reverse('musclewiki:muscles-detail',
+        url_detail = reverse('muscles-detail',
                              kwargs={"pk": self.muscle.id})
 
         response_detail = self.client.get(url_detail)
@@ -113,14 +116,15 @@ class TestMusclewikiViews(APITestCase):
     def test_CRUD_Muscle_View_Set_with_random_user(self):
         self.client.post(reverse('login'), self.credentials)
 
-        url_list = reverse('musclewiki:muscles-list')
+        url_list = reverse('muscles-list')
 
         response_list = self.client.get(url_list)
+        response_content = json.loads(response_list.content)['results']
 
         qs_list = Muscle.objects.all()
 
         self.assertEqual(response_list.status_code, status.HTTP_200_OK)
-        self.assertEqual(qs_list.count(), 1)
+        self.assertEqual(len(response_content), qs_list.count())
 
         data = {
             "name": 'Muscle Test2'
@@ -133,7 +137,7 @@ class TestMusclewikiViews(APITestCase):
                          status.HTTP_403_FORBIDDEN)
         self.assertEqual(qs_create.count(), 1)
 
-        url_detail = reverse('musclewiki:muscles-detail',
+        url_detail = reverse('muscles-detail',
                              kwargs={"pk": self.muscle.id})
 
         response_detail = self.client.get(url_detail)
@@ -161,14 +165,15 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs_delete.count(), 1)
 
     def test_CRUD_Muscle_View_Set_without_authentication(self):
-        url_list = reverse('musclewiki:muscles-list')
+        url_list = reverse('muscles-list')
 
         response_list = self.client.get(url_list)
+        response_content = json.loads(response_list.content)['results']
 
         qs_list = Muscle.objects.all()
 
         self.assertEqual(response_list.status_code, status.HTTP_200_OK)
-        self.assertEqual(qs_list.count(), 1)
+        self.assertEqual(len(response_content), qs_list.count())
 
         data = {
             "name": 'Muscle Test2'
@@ -181,7 +186,7 @@ class TestMusclewikiViews(APITestCase):
                          status.HTTP_403_FORBIDDEN)
         self.assertEqual(qs_create.count(), 1)
 
-        url_detail = reverse('musclewiki:muscles-detail',
+        url_detail = reverse('muscles-detail',
                              kwargs={"pk": self.muscle.id})
 
         response_detail = self.client.get(url_detail)
@@ -395,7 +400,7 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
     def test_Muscle_View_Set_with_wrong_values_in_endpoint(self):
         self.client.post(reverse('login'), self.credentials_admin)
 
-        url = reverse('musclewiki:muscles-detail',
+        url = reverse('muscles-detail',
                       kwargs={"pk": 999})
 
         response_detail = self.client.get(url)

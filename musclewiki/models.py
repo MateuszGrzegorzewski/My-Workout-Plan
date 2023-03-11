@@ -1,8 +1,11 @@
-from django.db import models
+import uuid
+
 from django.contrib.auth.models import User
+from django.db import models
 
 
 class Muscle(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=30, unique=True)
 
     @property
@@ -18,12 +21,16 @@ class Muscle(models.Model):
 
 
 class Exercise(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     muscle = models.ManyToManyField(Muscle)
     technique = models.TextField(null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    update = models.DateTimeField(auto_now=True)
 
     class Meta:
+        ordering = ['-update', 'created']
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'name'], name="unique_name_of_exercise")

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from .models import Exercise, Muscle
 from .permissions import AuthorOrReadOnly, IsOwnerOrReadOnly
-from .serializer import ExerciseSerializer, MuscleSerializer
+from .serializers import ExerciseSerializer, MuscleSerializer
 
 
 class MuscleViewSet(viewsets.ModelViewSet):
@@ -23,11 +23,12 @@ class MuscleViewSet(viewsets.ModelViewSet):
             exercises = Exercise.objects.filter(
                 muscle__pk=pk).filter(user__is_staff=True)
 
-        serializer = MuscleSerializer(instance)
+        serializer = MuscleSerializer(instance, context={'request': request})
         serializer_exercise = ExerciseSerializer(
             exercises, many=True, context={'request': request})
         return Response({"muscle": serializer.data,
-                         "exercises": serializer_exercise.data})
+                         "exercises": serializer_exercise.data
+                         })
 
 
 class ExerciseDetailUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
