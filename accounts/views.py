@@ -3,12 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
 
 def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect('/')
-
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -21,7 +19,6 @@ def loginPage(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('/')
         else:
             messages.error(request, "Username or password does not exist")
 
@@ -30,7 +27,7 @@ def loginPage(request):
 
 def logoutPage(request):
     logout(request)
-    return redirect('/')
+    return redirect(reverse('login'))
 
 
 def registerPage(request):
@@ -40,7 +37,6 @@ def registerPage(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect("/")
         messages.error(
             request, "Unsuccessful registration. Invalid information.")
 

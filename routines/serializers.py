@@ -61,7 +61,7 @@ class TrainingParametersSerializer(serializers.ModelSerializer):
         return value
 
     def validate_rir(self, value):
-        if value and not value.isdigit() and not re.match(r'^[0-10]+-[0-10]+$', value):
+        if value and not value.isdigit() and not re.match(r'^([0-9]|10)-([0-9]|10)$', value):
             raise serializers.ValidationError(
                 'RIR must be a number or number-number (e.g. 1 or 1-2).')
         return value
@@ -117,10 +117,12 @@ class PlanSerializer(serializers.ModelSerializer):
 
     def validate_training(self, value):
         user = self.context['request'].user
-        ids = TrainingModel.objects.filter(user=user)
-        if value not in ids:
-            raise serializers.ValidationError(
-                "Error. Improper training")
+        valid_training_ids = user.trainingmodel_set.values_list(
+            'id', flat=True)
+        invalid_training_ids = [
+            t.id for t in value if t.id not in valid_training_ids]
+        if invalid_training_ids:
+            raise serializers.ValidationError("Error. Improper training")
         return value
 
 

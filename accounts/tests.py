@@ -33,7 +33,7 @@ class TestAccount(TestCase):
 
         self.assertTemplateUsed(response_to_test_template,
                                 'accounts/login.html')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_login_invalid(self):
         response_invalid = self.client.post(
@@ -41,27 +41,18 @@ class TestAccount(TestCase):
 
         self.assertFalse(response_invalid.context['user'].is_authenticated)
 
-    def test_login_user_which_is_authenticated(self):
-        self.client.post(reverse('login'), self.credentials, follow=True)
-        response = self.client.post(
-            reverse('login'), self.credentials, follow=True)
-
-        self.assertRedirects(response, '/')
 
     def test_logout(self):
-        response_login = self.client.post(
-            reverse('login'), self.credentials)
-
-        self.assertEqual(response_login.status_code, 302)
-
+        self.client.post(reverse('login'), self.credentials)
         response = self.client.post(reverse('logout'))
 
         self.assertEqual(response.status_code, 302)
 
+
     def test_register(self):
         response_to_test_template = self.client.get(reverse('register'))
         response = self.client.post(
-            reverse('register'), follow=True, data=self.credentials_register)
+            reverse('register'), data=self.credentials_register)
 
         self.assertTemplateUsed(
             response_to_test_template, template_name='accounts/register.html')
@@ -72,7 +63,7 @@ class TestAccount(TestCase):
 
     def test_register_invalid(self):
         response = self.client.post(
-            reverse('register'), follow=True, data=self.credentials_register_invalid)
+            reverse('register'), data=self.credentials_register_invalid)
 
         self.assertContains(
             response, "Unsuccessful registration. Invalid information.")

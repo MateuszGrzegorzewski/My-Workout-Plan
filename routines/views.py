@@ -3,27 +3,24 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from .models import (PlanModel, TrainingExerciseModel, TrainingModel,
-                     TrainingParametersModel)
+                     TrainingParametersModel, TrainingResultModel)
 from .serializers import (PlanSerializer, TrainingExerciseSerializer,
-                          TrainingParametersSerializer, TrainingResultModel,
+                          TrainingParametersSerializer,
                           TrainingResultSerializer, TrainingSerializer)
 
 
 class TrainingExercisePagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
     max_page_size = 100
 
 
 class TrainingPagination(PageNumberPagination):
     page_size = 5
-    page_size_query_param = 'page_size'
     max_page_size = 50
 
 
 class PlanPagination(PageNumberPagination):
     page_size = 1
-    page_size_query_param = 'page_size'
     max_page_size = 10
 
 

@@ -6,7 +6,7 @@ urlpatterns = [
     path("auth/", include("accounts.urls")),
     path("musclewiki/", include("musclewiki.urls")),
     path("routines/", include("routines.urls")),
-    path("", include("main.urls")),
+    # path("", include("main.urls")),
 ]
 
-handler404 = 'main.views.custom_page_not_found_view'
+# handler404 = 'main.views.custom_page_not_found_view'
