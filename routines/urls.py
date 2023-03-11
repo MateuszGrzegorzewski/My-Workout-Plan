@@ -12,8 +12,8 @@ router.register(r'training/param', TrainingParametersViewSet,
                 basename="training_parameters")
 router.register(r'training/result', TrainingResultViewSet,
                 basename="training_result")
-router.register(r'training', TrainingViewSet, basename="r_training")
-router.register(r'', PlanViewSet, basename="r_plan")
+router.register(r'training', TrainingViewSet, basename="training")
+router.register(r'', PlanViewSet, basename="plan")
 
 
 urlpatterns = [

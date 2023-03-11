@@ -6,8 +6,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import (PlanModel, TrainingExerciseModel, TrainingModel,
-                     TrainingParametersModel, TrainingResultModel)
+from .models import (Plan, Training, TrainingExercise, TrainingParameters,
+                     TrainingResult)
 
 
 class TestRoutinesModels(APITestCase):
@@ -15,31 +15,31 @@ class TestRoutinesModels(APITestCase):
         user = User.objects.create_user(
             username='testuser', password='testpassword')
 
-        self.exercise = TrainingExerciseModel.objects.create(
+        self.exercise = TrainingExercise.objects.create(
             user=user,
             name="Exercise",
             description='test description'
         )
 
-        self.training = TrainingModel.objects.create(
+        self.training = Training.objects.create(
             user=user,
             name="Training",
         )
 
-        self.trainingparams = TrainingParametersModel.objects.create(
+        self.trainingparams = TrainingParameters.objects.create(
             user=user,
             name=self.training,
             exercise=self.exercise,
             series=5
         )
 
-        self.plan = PlanModel.objects.create(
+        self.plan = Plan.objects.create(
             user=user,
             name="Plan",
         )
         self.plan.training.add(self.training)
 
-        self.trainingresult = TrainingResultModel.objects.create(
+        self.trainingresult = TrainingResult.objects.create(
             user=user,
             training=self.trainingparams,
             serie_nr=1,
@@ -75,46 +75,46 @@ class TestRoutinesViews(APITestCase):
         self.user = User.objects.create_user(**self.credentials)
         self.user2 = User.objects.create_user(**self.credentials2)
 
-        self.exercise = TrainingExerciseModel.objects.create(
+        self.exercise = TrainingExercise.objects.create(
             user=self.user,
             name="Exercise",
             description='test description'
         )
 
-        self.exercise_next = TrainingExerciseModel.objects.create(
+        self.exercise_next = TrainingExercise.objects.create(
             user=self.user,
             name="Next Exercise",
         )
 
-        self.exercise2 = TrainingExerciseModel.objects.create(
+        self.exercise2 = TrainingExercise.objects.create(
             user=self.user2,
             name="Second Exercise",
         )
 
-        self.training = TrainingModel.objects.create(
+        self.training = Training.objects.create(
             user=self.user,
             name="Training",
         )
 
-        self.training2 = TrainingModel.objects.create(
+        self.training2 = Training.objects.create(
             user=self.user2,
             name="Another Training",
         )
 
-        self.trainingparams = TrainingParametersModel.objects.create(
+        self.trainingparams = TrainingParameters.objects.create(
             user=self.user,
             name=self.training,
             exercise=self.exercise,
             series=5
         )
 
-        self.plan = PlanModel.objects.create(
+        self.plan = Plan.objects.create(
             user=self.user,
             name="Plan",
         )
         self.plan.training.add(self.training)
 
-        self.trainingresult = TrainingResultModel.objects.create(
+        self.trainingresult = TrainingResult.objects.create(
             user=self.user,
             training=self.trainingparams,
             serie_nr=1,
@@ -130,7 +130,7 @@ class TestRoutinesViews(APITestCase):
         response = self.client.get(url)
         response_content = json.loads(response.content)['results']
 
-        exercises = TrainingExerciseModel.objects.filter(user=self.user)
+        exercises = TrainingExercise.objects.filter(user=self.user)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response_content), exercises.count())
@@ -149,7 +149,7 @@ class TestRoutinesViews(APITestCase):
         }
         response_create = self.client.post(url, data)
 
-        training_params = TrainingParametersModel.objects.filter(
+        training_params = TrainingParameters.objects.filter(
             user=self.user)
 
         self.assertEqual(response_create.status_code, status.HTTP_201_CREATED)
@@ -177,7 +177,7 @@ class TestRoutinesViews(APITestCase):
         }
         response = self.client.post(url, data)
 
-        training_params = TrainingParametersModel.objects.filter(
+        training_params = TrainingParameters.objects.filter(
             user=self.user)
 
         response_data = json.loads(response.content)
@@ -197,12 +197,12 @@ class TestRoutinesViews(APITestCase):
             response_data['rest'][0], "Rest must be a number or a decimal number ending with .5 (e.g. 1.5 or 3)")
 
     def test_training_view(self):
-        url = reverse('r_training-list')
+        url = reverse('training-list')
 
         response = self.client.get(url)
         response_content = json.loads(response.content)['results']
 
-        trainings = TrainingModel.objects.filter(user=self.user)
+        trainings = Training.objects.filter(user=self.user)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response_content), trainings.count())
@@ -213,7 +213,7 @@ class TestRoutinesViews(APITestCase):
         response = self.client.get(url)
         response_content = json.loads(response.content)['results']
 
-        trainings = TrainingResultModel.objects.filter(user=self.user)
+        trainings = TrainingResult.objects.filter(user=self.user)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response_content), trainings.count())
@@ -228,7 +228,7 @@ class TestRoutinesViews(APITestCase):
 
         response_create = self.client.post(url, data)
 
-        training_results = TrainingResultModel.objects.filter(
+        training_results = TrainingResult.objects.filter(
             user=self.user)
 
         self.assertEqual(response_create.status_code, status.HTTP_201_CREATED)
@@ -248,7 +248,7 @@ class TestRoutinesViews(APITestCase):
         response = self.client.post(url, data)
         response_data = json.loads(response.content)
 
-        training_results = TrainingResultModel.objects.filter(
+        training_results = TrainingResult.objects.filter(
             user=self.user)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -257,12 +257,12 @@ class TestRoutinesViews(APITestCase):
                          "Error. Saved training has fewer series")
 
     def test_plans_view(self):
-        url = reverse('r_plan-list')
+        url = reverse('plan-list')
 
         response = self.client.get(url)
         response_content = json.loads(response.content)['results']
 
-        plans = PlanModel.objects.filter(user=self.user)
+        plans = Plan.objects.filter(user=self.user)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response_content), plans.count())
@@ -273,13 +273,13 @@ class TestRoutinesViews(APITestCase):
         }
         response_create = self.client.post(url, data)
 
-        plans = PlanModel.objects.filter(user=self.user)
+        plans = Plan.objects.filter(user=self.user)
 
         self.assertEqual(response_create.status_code, status.HTTP_201_CREATED)
         self.assertEqual(plans.count(), 2)
 
     def test_creating_plans_with_bad_value(self):
-        url = reverse('r_plan-list')
+        url = reverse('plan-list')
 
         data = {
             "name": "Plan Test",
@@ -288,7 +288,7 @@ class TestRoutinesViews(APITestCase):
 
         response = self.client.post(url, data)
 
-        training_results = TrainingResultModel.objects.filter(
+        training_results = TrainingResult.objects.filter(
             user=self.user)
 
         response_data = json.loads(response.content)

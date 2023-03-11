@@ -3,8 +3,8 @@ import re
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from .models import (PlanModel, TrainingExerciseModel, TrainingModel,
-                     TrainingParametersModel, TrainingResultModel)
+from .models import (Plan, Training, TrainingExercise, TrainingParameters,
+                     TrainingResult)
 
 
 def current_user():
@@ -17,10 +17,10 @@ class TrainingExerciseSerializer(serializers.ModelSerializer):
         view_name='training_exercise-detail')
 
     class Meta:
-        model = TrainingExerciseModel
+        model = TrainingExercise
         fields = '__all__'
         validators = [UniqueTogetherValidator(
-            queryset=TrainingExerciseModel.objects.all(), fields=['user', 'name'], message="This name of exercise already exists")]
+            queryset=TrainingExercise.objects.all(), fields=['user', 'name'], message="This name of exercise already exists")]
 
 
 class TrainingParametersSerializer(serializers.ModelSerializer):
@@ -31,19 +31,19 @@ class TrainingParametersSerializer(serializers.ModelSerializer):
     training_name = serializers.ReadOnlyField(source='name.name')
 
     class Meta:
-        model = TrainingParametersModel
+        model = TrainingParameters
         fields = '__all__'
 
     def validate_name(self, value):
         user = self.context['request'].user
-        ids = TrainingModel.objects.filter(user=user)
+        ids = Training.objects.filter(user=user)
         if value not in ids:
             raise serializers.ValidationError("Error. Improper training")
         return value
 
     def validate_exercise(self, value):
         user = self.context['request'].user
-        ids = TrainingExerciseModel.objects.filter(user=user)
+        ids = TrainingExercise.objects.filter(user=user)
         if value not in ids:
             raise serializers.ValidationError("Error. Improper exercise")
         return value
@@ -76,18 +76,18 @@ class TrainingParametersSerializer(serializers.ModelSerializer):
 class TrainingSerializer(serializers.ModelSerializer):
     user = current_user()
     url_detail = serializers.HyperlinkedIdentityField(
-        view_name='r_training-detail')
+        view_name='training-detail')
     parameters = serializers.SerializerMethodField()
     url_create_training_params = serializers.SerializerMethodField()
 
     class Meta:
-        model = TrainingModel
+        model = Training
         fields = '__all__'
         validators = [UniqueTogetherValidator(
-            queryset=TrainingModel.objects.all(), fields=['user', 'name'], message="This name of training already exists")]
+            queryset=Training.objects.all(), fields=['user', 'name'], message="This name of training already exists")]
 
     def get_parameters(self, obj):
-        parameters = TrainingParametersModel.objects.filter(name__id=obj.id)
+        parameters = TrainingParameters.objects.filter(name__id=obj.id)
         serialized_parameters = TrainingParametersSerializer(
             parameters, many=True, context=self.context, read_only=True)
         return serialized_parameters.data
@@ -100,14 +100,14 @@ class TrainingSerializer(serializers.ModelSerializer):
 class PlanSerializer(serializers.ModelSerializer):
     user = current_user()
     url_detail = serializers.HyperlinkedIdentityField(
-        view_name='r_plan-detail')
+        view_name='plan-detail')
     trainings_values = serializers.SerializerMethodField()
 
     class Meta:
-        model = PlanModel
+        model = Plan
         fields = '__all__'
         validators = [UniqueTogetherValidator(
-            queryset=PlanModel.objects.all(), fields=['user', 'name'], message="This name of plan already exists")]
+            queryset=Plan.objects.all(), fields=['user', 'name'], message="This name of plan already exists")]
 
     def get_trainings_values(self, obj):
         training_objs = obj.training.all()
@@ -117,7 +117,7 @@ class PlanSerializer(serializers.ModelSerializer):
 
     def validate_training(self, value):
         user = self.context['request'].user
-        valid_training_ids = user.trainingmodel_set.values_list(
+        valid_training_ids = user.training_set.values_list(
             'id', flat=True)
         invalid_training_ids = [
             t.id for t in value if t.id not in valid_training_ids]
@@ -135,15 +135,15 @@ class TrainingResultSerializer(serializers.ModelSerializer):
     training_series = serializers.ReadOnlyField(source='training.series')
 
     class Meta:
-        model = TrainingResultModel
+        model = TrainingResult
         fields = '__all__'
         validators = [UniqueTogetherValidator(
-            queryset=TrainingResultModel.objects.all(), fields=['user', 'training', 'date', 'serie_nr'], message="It is impossible to set the same serie for today's training")]
+            queryset=TrainingResult.objects.all(), fields=['user', 'training', 'date', 'serie_nr'], message="It is impossible to set the same serie for today's training")]
 
     def validate_serie_nr(self, value):
         training = self.initial_data.get('training')
 
-        if value > TrainingParametersModel.objects.get(id=training).series:
+        if value > TrainingParameters.objects.get(id=training).series:
             raise serializers.ValidationError(
                 "Error. Saved training has fewer series")
         return value

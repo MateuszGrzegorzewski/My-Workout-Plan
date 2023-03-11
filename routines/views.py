@@ -2,8 +2,8 @@ from rest_framework import mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
-from .models import (PlanModel, TrainingExerciseModel, TrainingModel,
-                     TrainingParametersModel, TrainingResultModel)
+from .models import (Plan, Training, TrainingExercise, TrainingParameters,
+                     TrainingResult)
 from .serializers import (PlanSerializer, TrainingExerciseSerializer,
                           TrainingParametersSerializer,
                           TrainingResultSerializer, TrainingSerializer)
@@ -31,7 +31,7 @@ class TrainingExerciseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = TrainingExerciseModel.objects.filter(user=user)
+        queryset = TrainingExercise.objects.filter(user=user)
         return queryset
 
 
@@ -42,7 +42,7 @@ class TrainingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = TrainingModel.objects.filter(user=user)
+        queryset = Training.objects.filter(user=user)
         return queryset
 
 
@@ -57,7 +57,7 @@ class TrainingParametersViewSet(mixins.CreateModelMixin,
 
     def get_queryset(self):
         user = self.request.user
-        queryset = TrainingParametersModel.objects.filter(user=user)
+        queryset = TrainingParameters.objects.filter(user=user)
         return queryset
 
 
@@ -68,7 +68,7 @@ class PlanViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = PlanModel.objects.filter(user=user)
+        queryset = Plan.objects.filter(user=user)
         return queryset
 
 
@@ -79,5 +79,5 @@ class TrainingResultViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = TrainingResultModel.objects.filter(user=user)
+        queryset = TrainingResult.objects.filter(user=user)
         return queryset

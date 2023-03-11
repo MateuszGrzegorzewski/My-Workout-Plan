@@ -6,7 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
-class TrainingExerciseModel(models.Model):
+class TrainingExercise(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
@@ -25,7 +25,7 @@ class TrainingExerciseModel(models.Model):
         return self.name
 
 
-class TrainingModel(models.Model):
+class Training(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
@@ -43,12 +43,12 @@ class TrainingModel(models.Model):
         return self.name
 
 
-class TrainingParametersModel(models.Model):
+class TrainingParameters(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.ForeignKey(TrainingModel, on_delete=models.CASCADE)
+    name = models.ForeignKey(Training, on_delete=models.CASCADE)
     exercise = models.ForeignKey(
-        TrainingExerciseModel, on_delete=models.CASCADE)
+        TrainingExercise, on_delete=models.CASCADE)
     series = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(30)])
     reps = models.CharField(max_length=10, null=True, blank=True)
@@ -66,11 +66,11 @@ class TrainingParametersModel(models.Model):
         return f'{self.name.name}-{self.exercise.name}'
 
 
-class PlanModel(models.Model):
+class Plan(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
-    training = models.ManyToManyField(TrainingModel)
+    training = models.ManyToManyField(Training)
     created = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
 
@@ -85,11 +85,11 @@ class PlanModel(models.Model):
         return self.name
 
 
-class TrainingResultModel(models.Model):
+class TrainingResult(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     training = models.ForeignKey(
-        TrainingParametersModel, on_delete=models.CASCADE)
+        TrainingParameters, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.date.today)
     serie_nr = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(30)])

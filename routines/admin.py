@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import (PlanModel, TrainingExerciseModel, TrainingModel,
-                     TrainingParametersModel, TrainingResultModel)
+from .models import (Plan, Training, TrainingExercise, TrainingParameters,
+                     TrainingResult)
 
-admin.site.register(TrainingModel)
-admin.site.register(TrainingExerciseModel)
-admin.site.register(TrainingParametersModel)
-admin.site.register(PlanModel)
-admin.site.register(TrainingResultModel)
+admin.site.register(Training)
+admin.site.register(TrainingExercise)
+admin.site.register(TrainingParameters)
+admin.site.register(Plan)
+admin.site.register(TrainingResult)
