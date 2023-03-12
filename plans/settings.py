@@ -22,7 +22,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    'knox',
+    "knox",
+    "drf_spectacular",
+    'drf_spectacular_sidecar',
     "musclewiki.apps.MusclewikiConfig",
     "accounts.apps.AccountsConfig",
     "routines.apps.RoutinesConfig",
@@ -107,6 +109,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
     'DATETIME_FORMAT': "%Y-%m-%d",
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -114,10 +117,19 @@ REST_FRAMEWORK = {
 }
 
 REST_KNOX = {
-  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
-  'AUTH_TOKEN_CHARACTER_LENGTH': 64,
-  'TOKEN_TTL': datetime.timedelta(hours=10),
-  'USER_SERIALIZER': 'accounts.serializers.UserSerializer',
-  'TOKEN_LIMIT_PER_USER': 5,
-  'AUTO_REFRESH': False,
+    'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
+    'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+    'TOKEN_TTL': datetime.timedelta(hours=10),
+    'USER_SERIALIZER': 'accounts.serializers.UserSerializer',
+    'TOKEN_LIMIT_PER_USER': 5,
+    'AUTO_REFRESH': False,
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'My Workout Plan',
+    'DESCRIPTION': 'My Workout Plan is a Python Django application that allows users to create professional training plans and search for appropriate exercises for different muscle groups.',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
 }
