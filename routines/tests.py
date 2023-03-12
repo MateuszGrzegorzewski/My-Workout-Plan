@@ -1,19 +1,19 @@
 import datetime
 import json
 
-from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import (Plan, Training, TrainingExercise, TrainingParameters,
                      TrainingResult)
+from accounts.models import CustomUser as User
 
 
 class TestRoutinesModels(APITestCase):
     def setUp(self):
         user = User.objects.create_user(
-            username='testuser', password='testpassword')
+            email='testuser@gmail.com', password='testpassword')
 
         self.exercise = TrainingExercise.objects.create(
             user=user,
@@ -66,10 +66,10 @@ class TestRoutinesModels(APITestCase):
 class TestRoutinesViews(APITestCase):
     def setUp(self):
         self.credentials = {
-            'username': 'testuser',
+            'email': 'testuser@gmail.com',
             'password': 'secret'}
         self.credentials2 = {
-            'username': 'testuser2',
+            'email': 'testuser2@gmail.com',
             'password': 'secret'}
 
         self.user = User.objects.create_user(**self.credentials)
@@ -122,7 +122,7 @@ class TestRoutinesViews(APITestCase):
             reps=10
         )
 
-        self.client.post(reverse('login'), self.credentials)
+        self.client.force_authenticate(user=self.user)
 
     def test_exercise_view(self):
         url = reverse('training_exercise-list')

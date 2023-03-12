@@ -1,3 +1,4 @@
+import datetime
 import os
 from pathlib import Path
 
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    'knox',
     "musclewiki.apps.MusclewikiConfig",
     "accounts.apps.AccountsConfig",
     "routines.apps.RoutinesConfig",
@@ -35,6 +37,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 ROOT_URLCONF = "plans.urls"
 
@@ -103,7 +107,17 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
     'DATETIME_FORMAT': "%Y-%m-%d",
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20
+}
+
+REST_KNOX = {
+  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
+  'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+  'TOKEN_TTL': datetime.timedelta(hours=10),
+  'USER_SERIALIZER': 'accounts.serializers.UserSerializer',
+  'TOKEN_LIMIT_PER_USER': 5,
+  'AUTO_REFRESH': False,
 }

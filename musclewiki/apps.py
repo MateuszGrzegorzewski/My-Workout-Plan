@@ -7,4 +7,7 @@ class MusclewikiConfig(AppConfig):
     name = "musclewiki"
 
     def ready(self):
-        call_command('loaddata', 'muscles.json')
+        try:
+            call_command('loaddata', 'muscles.json')
+        except:
+            pass

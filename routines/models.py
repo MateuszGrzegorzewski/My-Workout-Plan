@@ -1,14 +1,14 @@
 import datetime
 import uuid
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
 class TrainingExercise(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -27,7 +27,7 @@ class TrainingExercise(models.Model):
 
 class Training(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     created = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
@@ -45,7 +45,7 @@ class Training(models.Model):
 
 class TrainingParameters(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.ForeignKey(Training, on_delete=models.CASCADE)
     exercise = models.ForeignKey(
         TrainingExercise, on_delete=models.CASCADE)
@@ -68,7 +68,7 @@ class TrainingParameters(models.Model):
 
 class Plan(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
     training = models.ManyToManyField(Training)
     created = models.DateTimeField(auto_now_add=True)
@@ -87,7 +87,7 @@ class Plan(models.Model):
 
 class TrainingResult(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     training = models.ForeignKey(
         TrainingParameters, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.date.today)

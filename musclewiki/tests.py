@@ -1,19 +1,19 @@
 import json
 
-from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 from .models import Exercise, Muscle
+from accounts.models import CustomUser as User
 
 
 class TestMuclewikiModels(APITestCase):
     @classmethod
     def setUpTestData(cls):
         user = User.objects.create_user(
-            username='testuser', password='testpassword')
+            email='test@gmail.com', password='testpassword')
 
         cls.muscle = Muscle.objects.create(
             name="Muscle Test"
@@ -36,11 +36,11 @@ class TestMuclewikiModels(APITestCase):
 class TestMusclewikiViews(APITestCase):
     def setUp(self):
         self.credentials = {
-            'username': 'testuser',
+            'email': 'testuser@gmail.com',
             'password': 'secret'}
 
         self.credentials_admin = {
-            'username': 'testadmin',
+            'email': 'testadmin@gmail.com',
             'password': 'secretadmin'}
 
         self.user = User.objects.create_user(**self.credentials)
@@ -65,7 +65,7 @@ class TestMusclewikiViews(APITestCase):
         self.exercise.muscle.add(self.muscle.id)
 
     def test_CRUD_Muscle_View_Set(self):
-        self.client.post(reverse('login'), self.credentials_admin)
+        self.client.force_authenticate(user=self.admin)
 
         url_list = reverse('muscles-list')
 
@@ -114,7 +114,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs_delete.count(), 1)
 
     def test_CRUD_Muscle_View_Set_with_random_user(self):
-        self.client.post(reverse('login'), self.credentials)
+        self.client.force_authenticate(user=self.user)
 
         url_list = reverse('muscles-list')
 
@@ -183,7 +183,7 @@ class TestMusclewikiViews(APITestCase):
         qs_create = Muscle.objects.all()
 
         self.assertEqual(response_create.status_code,
-                         status.HTTP_403_FORBIDDEN)
+                         status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(qs_create.count(), 1)
 
         url_detail = reverse('muscles-detail',
@@ -202,7 +202,7 @@ class TestMusclewikiViews(APITestCase):
         qs_update = Muscle.objects.get(id=self.muscle.id)
 
         self.assertEqual(response_update.status_code,
-                         status.HTTP_403_FORBIDDEN)
+                         status.HTTP_401_UNAUTHORIZED)
         self.assertNotEqual(qs_update.name, 'Muscle Test Update')
 
         response_delete = self.client.delete(url_detail)
@@ -210,11 +210,11 @@ class TestMusclewikiViews(APITestCase):
         qs_delete = Muscle.objects.all()
 
         self.assertEqual(response_delete.status_code,
-                         status.HTTP_403_FORBIDDEN)
+                         status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(qs_delete.count(), 1)
 
     def test_Exercise_View_Set_CREATE(self):
-        self.client.post(reverse('login'), self.credentials_admin)
+        self.client.force_authenticate(user=self.admin)
 
         url = reverse('exercise-create')
 
@@ -245,11 +245,11 @@ class TestMusclewikiViews(APITestCase):
         qs = Exercise.objects.all()
 
         self.assertEqual(response_create.status_code,
-                         status.HTTP_403_FORBIDDEN)
+                         status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(qs.count(), 2)
 
     def test_Exercise_View_Set_DETAIL_UPDATE_DELETE_with_admin(self):
-        self.client.post(reverse('login'), self.credentials_admin)
+        self.client.force_authenticate(user=self.admin)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise.id})
@@ -300,7 +300,7 @@ class TestMusclewikiViews(APITestCase):
         qs_update = Exercise.objects.get(id=self.exercise.id)
 
         self.assertEqual(response_update.status_code,
-                         status.HTTP_403_FORBIDDEN)
+                         status.HTTP_401_UNAUTHORIZED)
         self.assertNotEqual(qs_update.name, 'Exercise Test Update')
 
         response_delete = self.client.delete(url)
@@ -308,11 +308,11 @@ class TestMusclewikiViews(APITestCase):
         qs_delete = Exercise.objects.all()
 
         self.assertEqual(response_delete.status_code,
-                         status.HTTP_403_FORBIDDEN)
+                         status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(qs_delete.count(), 2)
 
     def test_Exercise_View_Set_DETAIL_UPDATE_DELETE_permissions_with_random_user(self):
-        self.client.post(reverse('login'), self.credentials)
+        self.client.force_authenticate(user=self.user)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise.id})
@@ -345,7 +345,7 @@ class TestMusclewikiViews(APITestCase):
         self.assertEqual(qs_delete.count(), 2)
 
     def test_Exercise_View_Set_DETAIL_UPDATE_DELETE_permissions_with_admin(self):
-        self.client.post(reverse('login'), self.credentials_admin)
+        self.client.force_authenticate(user=self.admin)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise_user.id})
@@ -381,7 +381,7 @@ class TestMusclewikiViews(APITestCase):
 class TestMusclewikiViewsValidation(TransactionTestCase):
     def setUp(self):
         self.credentials_admin = {
-            'username': 'testadmin',
+            'email': 'testadmin@gmail.com',
             'password': 'secretadmin'}
 
         self.admin = User.objects.create_superuser(**self.credentials_admin)
@@ -397,8 +397,10 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
         )
         self.exercise.muscle.add(self.muscle.id)
 
+        self.client = APIClient()
+
     def test_Muscle_View_Set_with_wrong_values_in_endpoint(self):
-        self.client.post(reverse('login'), self.credentials_admin)
+        self.client.force_authenticate(user=self.admin)
 
         url = reverse('muscles-detail',
                       kwargs={"pk": 999})
@@ -409,7 +411,7 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
                          status.HTTP_404_NOT_FOUND)
 
     def test_Exercise_View_Set_CREATE_unique_of_name(self):
-        self.client.post(reverse('login'), self.credentials_admin)
+        self.client.force_authenticate(user=self.admin)
 
         url = reverse('exercise-create')
 
@@ -427,7 +429,7 @@ class TestMusclewikiViewsValidation(TransactionTestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_Exercise_View_Set_UPDATE_unique_of_name(self):
-        self.client.post(reverse('login'), self.credentials_admin)
+        self.client.force_authenticate(user=self.admin)
 
         url = reverse('exercise-detail-update-delete',
                       kwargs={"pk": self.exercise.id})
